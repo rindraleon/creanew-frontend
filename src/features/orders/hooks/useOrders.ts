@@ -1,0 +1,83 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ordersApi } from "../api/orders.api";
+import { queryKeys } from "../../../shared/query/keys";
+import { useToast } from "../../../shared/context/ToastContext";
+import { errorMessage } from "../../../shared/utils/errors";
+import type { CreateOrderInput, Order, OrderQuery, OrderStatus } from "../../../shared/types/api";
+
+/** Historique personnel (le backend filtre : aucun IDOR possible, §34). */
+export function useMyOrders(query: OrderQuery = {}) {
+  return useQuery({
+    queryKey: queryKeys.orders.mine(query),
+    queryFn: () => ordersApi.mine(query),
+    placeholderData: (previous) => previous,
+  });
+}
+
+export function useOrder(id: string | undefined) {
+  return useQuery<Order>({
+    queryKey: queryKeys.orders.detail(id ?? ""),
+    queryFn: () => ordersApi.byId(id as string),
+    enabled: Boolean(id),
+  });
+}
+
+export function useCreateOrder() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: (input: CreateOrderInput) =>
+      ordersApi.create(input, crypto.randomUUID()),
+    onSuccess: (order) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.cart.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.orders.all });
+      toast("Commande " + order.orderNumber + " créée.");
+    },
+    onError: (error: unknown) => toast(errorMessage(error), "error"),
+  });
+}
+
+export function useCancelOrder() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+      ordersApi.cancel(id, reason),
+    onSuccess: () => {
+      // `orders.all` est un préfixe de `orders.detail(id)` : l'invalidation
+      // recharge donc aussi la page de suivi, avec `payment` et `statusHistory`.
+      void queryClient.invalidateQueries({ queryKey: queryKeys.orders.all });
+      toast("Commande annulée. Les articles ont été remis en stock.");
+    },
+    onError: (error: unknown) => toast(errorMessage(error), "error"),
+  });
+}
+
+/** [Vendeur/Admin] Transition de statut contrôlée (§66). */
+export function useUpdateOrderStatus() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      status,
+      comment,
+    }: {
+      id: string;
+      status: OrderStatus;
+      comment?: string;
+    }) => ordersApi.updateStatus(id, status, comment),
+    onSuccess: (order) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.orders.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.seller.all });
+      // La réponse de transition est partielle : on recharge le détail
+      // complet (avec `payment` et `statusHistory`) plutôt que de l'écrire.
+      void queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(order.id) });
+      toast("Statut mis à jour.");
+    },
+    onError: (error: unknown) => toast(errorMessage(error), "error"),
+  });
+}

@@ -1,0 +1,21 @@
+# MobilierShop — https://mobilier-shop.example
+User-agent: *
+Allow: /
+
+# Espaces prives et pages sans valeur pour l'indexation
+Disallow: /espace-client
+Disallow: /vendeur
+Disallow: /admin
+Disallow: /panier
+Disallow: /favoris
+Disallow: /commande
+Disallow: /connexion
+Disallow: /mot-de-passe-oublie
+Disallow: /reinitialiser-mot-de-passe
+Disallow: /devenir-vendeur
+
+# Resultats de recherche filtres (contenu duplique)
+Disallow: /boutique?*q=
+Disallow: /boutique?*page=
+
+Sitemap: https://mobilier-shop.example/sitemap.xml

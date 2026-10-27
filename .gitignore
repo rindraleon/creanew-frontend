@@ -1,0 +1,12 @@
+node_modules
+dist
+.DS_Store
+*.local
+
+# Variables d'environnement locales. Aucune n'est nécessaire pour développer :
+# `vite.config.ts` retombe sur http://localhost:3000 et le client d'API sur "/api".
+# Copier `.env.example` ici uniquement pour surcharger ces valeurs.
+.env
+.env.*
+!.env.example
+test/
