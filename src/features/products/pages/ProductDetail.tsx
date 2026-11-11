@@ -5,9 +5,13 @@ import { useProduct } from "../hooks/useCatalog";
 import { useAddCartItem } from "../../cart/hooks/useCart";
 import { useToggleWishlist } from "../../account/hooks/useWishlist";
 import { useAuth } from "../../auth/context/AuthProvider";
-import { FREE_SHIPPING_THRESHOLD } from "../../../shared/utils/constants";
 import { discountRate, formatDate, formatPrice } from "../../../shared/utils/format";
-import { isLowStock, isPurchasable, productImageUrl, toNumber } from "../../../shared/utils/product";
+import {
+  isLowStock,
+  isPurchasable,
+  productImageUrl,
+  toNumber,
+} from "../../../shared/utils/product";
 import Breadcrumbs from "../../../components/ui/Breadcrumbs";
 import Button from "../../../components/ui/Button";
 import Stars from "../../../components/ui/Stars";
@@ -26,9 +30,6 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState<number>(1);
   const [activeImage, setActiveImage] = useState<number>(0);
 
-  // Produits du même vendeur ou de la même catégorie. La requête n'est armée
-  // qu'une fois le produit connu : sans ce garde elle partait avec `limit: 0`,
-  // que l'API rejette en 422 (le `limit` est validé `@Min(1)`).
   const { data: related } = useProducts(
     { category: product?.category?.slug, limit: 5 },
     { enabled: Boolean(product) },
@@ -65,7 +66,7 @@ export default function ProductDetail() {
 
   const handleAdd = (): void => {
     if (!isAuthenticated) {
-      navigate("/connexion", { state: { from: "/boutique/" + product.slug } });
+      void navigate("/connexion", { state: { from: "/boutique/" + product.slug } });
       return;
     }
     addItem.mutate({ productId: product.id, quantity });
@@ -107,11 +108,17 @@ export default function ProductDetail() {
                   onClick={() => setActiveImage(i)}
                   aria-label={"Image " + (i + 1)}
                   className={`h-20 w-20 shrink-0 overflow-hidden rounded-md border-2 bg-surface-container transition-colors ${
-                    i === activeImage ? "border-secondary" : "border-transparent hover:border-outline-variant"
+                    i === activeImage
+                      ? "border-secondary"
+                      : "border-transparent hover:border-outline-variant"
                   }`}
                 >
                   {image.url ? (
-                    <img src={image.url} alt={image.alt ?? product.name} className="h-full w-full object-cover" />
+                    <img
+                      src={image.url}
+                      alt={image.alt ?? product.name}
+                      className="h-full w-full object-cover"
+                    />
                   ) : null}
                 </button>
               ))}
@@ -158,13 +165,17 @@ export default function ProductDetail() {
           <dl className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
             {product.material && (
               <div className="rounded-lg bg-surface-container-low p-3.5">
-                <dt className="text-label-sm uppercase tracking-wider text-on-surface-variant">Matière</dt>
+                <dt className="text-label-sm uppercase tracking-wider text-on-surface-variant">
+                  Matière
+                </dt>
                 <dd className="mt-0.5 text-body-sm text-primary">{product.material}</dd>
               </div>
             )}
             {product.dimensions && (
               <div className="rounded-lg bg-surface-container-low p-3.5">
-                <dt className="text-label-sm uppercase tracking-wider text-on-surface-variant">Dimensions</dt>
+                <dt className="text-label-sm uppercase tracking-wider text-on-surface-variant">
+                  Dimensions
+                </dt>
                 <dd className="mt-0.5 text-body-sm text-primary">{product.dimensions}</dd>
               </div>
             )}
@@ -227,7 +238,7 @@ export default function ProductDetail() {
 
           <p className="mt-4 flex items-center gap-2 text-body-sm text-on-surface-variant">
             <Truck size={16} className="text-secondary" />
-            Livraison offerte dès {formatPrice(FREE_SHIPPING_THRESHOLD)} · Retours sous 30 jours
+            Livraison et retours : renseignez-vous auprès de notre équipe
           </p>
 
           {/* Vendeur */}
@@ -237,7 +248,9 @@ export default function ProductDetail() {
                 <Store size={18} />
               </span>
               <div className="min-w-0">
-                <p className="text-label-sm uppercase tracking-wider text-on-surface-variant">Vendu par</p>
+                <p className="text-label-sm uppercase tracking-wider text-on-surface-variant">
+                  Vendu par
+                </p>
                 <p className="truncate text-body-md font-semibold text-primary">
                   {product.seller.shopName}
                 </p>
@@ -257,12 +270,16 @@ export default function ProductDetail() {
           <dl className="mt-6 grid grid-cols-2 gap-3 text-body-sm">
             {product.sku && (
               <div>
-                <dt className="text-label-sm uppercase tracking-wider text-on-surface-variant">Référence</dt>
+                <dt className="text-label-sm uppercase tracking-wider text-on-surface-variant">
+                  Référence
+                </dt>
                 <dd className="text-primary">{product.sku}</dd>
               </div>
             )}
             <div>
-              <dt className="text-label-sm uppercase tracking-wider text-on-surface-variant">Ajouté le</dt>
+              <dt className="text-label-sm uppercase tracking-wider text-on-surface-variant">
+                Ajouté le
+              </dt>
               <dd className="text-primary">{formatDate(product.createdAt)}</dd>
             </div>
           </dl>

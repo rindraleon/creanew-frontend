@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastProvider } from "../shared/context/ToastContext";
 import PageLoader from "../components/ui/PageLoader";
 import ErrorBoundary from "../components/ui/ErrorBoundary";
@@ -55,12 +55,16 @@ const AdminCustomers = lazy(() => import("../features/dashboard/pages/AdminCusto
 const AdminSellers = lazy(() => import("../features/sellers/pages/AdminSellers"));
 const AdminPayments = lazy(() => import("../features/payments/pages/AdminPayments"));
 const AdminCategories = lazy(() => import("../features/categories/pages/AdminCategories"));
+const AdminCollections = lazy(() => import("../features/collections/pages/AdminCollections"));
+const AdminContact = lazy(() => import("../features/contact/pages/AdminContact"));
+const AdminSiteContent = lazy(() => import("../features/site/pages/AdminSiteContent"));
 const AdminAnalytics = lazy(() => import("../features/dashboard/pages/AdminAnalytics"));
 const AdminAuditLogs = lazy(() => import("../features/dashboard/pages/AdminAuditLogs"));
 
+const MessagesPage = lazy(() => import("../features/messaging/pages/MessagesPage"));
+
 import SpaceBoundary from "./SpaceBoundary";
 
-/** Écran de transition pendant le chargement d'un espace privé. */
 function RouteFallback() {
   return (
     <div className="flex min-h-screen items-center justify-center">
@@ -73,118 +77,151 @@ export default function App() {
   return (
     <BrowserRouter>
       <ErrorBoundary>
-      <ToastProvider>
-        <ScrollToTop />
-        <Suspense fallback={<RouteFallback />}>
-        <Routes>
-          {/* Pages publiques */}
-          <Route element={<SpaceBoundary space="Boutique"><PublicLayout /></SpaceBoundary>}>
-            <Route path="/" element={<Home />} />
-            <Route path="/boutique" element={<Shop />} />
-            <Route path="/boutique/:slug" element={<ProductDetail />} />
-            <Route path="/collections" element={<Collections />} />
-            <Route path="/a-propos" element={<About />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/livraison-retours" element={<DeliveryReturns />} />
-            <Route path="/conditions-generales" element={<Terms />} />
-            <Route path="/confidentialite" element={<Privacy />} />
-            <Route path="/panier" element={<CartPage />} />
-            <Route path="/favoris" element={<Wishlist />} />
-            <Route path="/connexion" element={<Login />} />
-            <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
-            <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
+        <ToastProvider>
+          <ScrollToTop />
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
+              {/* Authentification autonome : ni barre de navigation, ni footer, ni fil d’Ariane. */}
+              <Route path="/connexion" element={<Login />} />
+              <Route path="/inscription" element={<Login initialMode="register" />} />
+              <Route path="/installation" element={<Navigate to="/connexion" replace />} />
+              <Route path="/verifier-email" element={<Navigate to="/connexion" replace />} />
+              <Route path="/renvoyer-verification" element={<Navigate to="/connexion" replace />} />
+              <Route
+                element={
+                  <SpaceBoundary space="Boutique">
+                    <PublicLayout />
+                  </SpaceBoundary>
+                }
+              >
+                <Route path="/" element={<Home />} />
+                <Route path="/boutique" element={<Shop />} />
+                <Route path="/boutique/:slug" element={<ProductDetail />} />
+                <Route path="/collections" element={<Collections />} />
+                <Route path="/a-propos" element={<About />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/livraison-retours" element={<DeliveryReturns />} />
+                <Route path="/conditions-generales" element={<Terms />} />
+                <Route path="/confidentialite" element={<Privacy />} />
+                <Route path="/panier" element={<CartPage />} />
+                <Route path="/favoris" element={<Wishlist />} />
+                <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
+                <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
+                <Route
+                  path="/messages"
+                  element={
+                    <RequireAuth>
+                      <MessagesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/messages/:id"
+                  element={
+                    <RequireAuth>
+                      <MessagesPage />
+                    </RequireAuth>
+                  }
+                />
 
-            <Route
-              path="/devenir-vendeur"
-              element={
-                <RequireAuth>
-                  <BecomeSeller />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/commande"
-              element={
-                <RequireAuth>
-                  <Checkout />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/commande/succes/:id"
-              element={
-                <RequireAuth>
-                  <OrderSuccess />
-                </RequireAuth>
-              }
-            />
-            <Route path="*" element={<NotFound />} />
-          </Route>
+                <Route
+                  path="/devenir-vendeur"
+                  element={
+                    <RequireAuth>
+                      <BecomeSeller />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/commande"
+                  element={
+                    <RequireAuth>
+                      <Checkout />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/commande/succes/:id"
+                  element={
+                    <RequireAuth>
+                      <OrderSuccess />
+                    </RequireAuth>
+                  }
+                />
+                <Route path="*" element={<NotFound />} />
+              </Route>
 
-          {/* Espace client */}
-          <Route
-            path="/espace-client"
-            element={
-              <RequireAuth>
-                <SpaceBoundary space="Espace client"><ClientLayout /></SpaceBoundary>
-              </RequireAuth>
-            }
-          >
-            <Route index element={<ClientDashboard />} />
-            <Route path="commandes" element={<ClientOrders />} />
-            <Route path="commandes/:id" element={<ClientOrderDetail />} />
-            <Route path="notifications" element={<ClientNotifications />} />
-            <Route path="profil" element={<ClientProfile />} />
-            <Route path="adresses" element={<ClientAddresses />} />
-          </Route>
+              <Route
+                path="/espace-client"
+                element={
+                  <RequireAuth>
+                    <SpaceBoundary space="Espace client">
+                      <ClientLayout />
+                    </SpaceBoundary>
+                  </RequireAuth>
+                }
+              >
+                <Route index element={<ClientDashboard />} />
+                <Route path="commandes" element={<ClientOrders />} />
+                <Route path="commandes/:id" element={<ClientOrderDetail />} />
+                <Route path="notifications" element={<ClientNotifications />} />
+                <Route path="profil" element={<ClientProfile />} />
+                <Route path="adresses" element={<ClientAddresses />} />
+              </Route>
 
-          {/* Espace vendeur */}
-          <Route
-            path="/vendeur"
-            element={
-              <RequireAuth>
-                <RequireSeller>
-                  <SpaceBoundary space="Espace vendeur"><SellerLayout /></SpaceBoundary>
-                </RequireSeller>
-              </RequireAuth>
-            }
-          >
-            <Route index element={<SellerDashboard />} />
-            <Route path="produits" element={<SellerProducts />} />
-            <Route path="produits/nouveau" element={<SellerProductForm />} />
-            <Route path="produits/:id" element={<SellerProductForm />} />
-            <Route path="commandes" element={<SellerOrders />} />
-            <Route path="commandes/:id" element={<SellerOrderDetail />} />
-            <Route path="ventes" element={<SellerSales />} />
-            <Route path="paiements" element={<SellerPayments />} />
-            <Route path="profil" element={<SellerProfile />} />
-          </Route>
+              <Route
+                path="/vendeur"
+                element={
+                  <RequireAuth>
+                    <RequireSeller>
+                      <SpaceBoundary space="Espace vendeur">
+                        <SellerLayout />
+                      </SpaceBoundary>
+                    </RequireSeller>
+                  </RequireAuth>
+                }
+              >
+                <Route index element={<SellerDashboard />} />
+                <Route path="produits" element={<SellerProducts />} />
+                <Route path="produits/nouveau" element={<SellerProductForm />} />
+                <Route path="produits/:id" element={<SellerProductForm />} />
+                <Route path="commandes" element={<SellerOrders />} />
+                <Route path="commandes/:id" element={<SellerOrderDetail />} />
+                <Route path="ventes" element={<SellerSales />} />
+                <Route path="paiements" element={<SellerPayments />} />
+                <Route path="profil" element={<SellerProfile />} />
+              </Route>
 
-          {/* Espace administrateur */}
-          <Route
-            path="/admin"
-            element={
-              <RequireAdmin>
-                <SpaceBoundary space="Administration"><AdminLayout /></SpaceBoundary>
-              </RequireAdmin>
-            }
-          >
-            <Route index element={<AdminDashboard />} />
-            <Route path="produits" element={<AdminProducts />} />
-            <Route path="commandes" element={<AdminOrders />} />
-            <Route path="commandes/:id" element={<AdminOrderDetail />} />
-            <Route path="clients" element={<AdminCustomers />} />
-            <Route path="vendeurs" element={<AdminSellers />} />
-            <Route path="paiements" element={<AdminPayments />} />
-            <Route path="categories" element={<AdminCategories />} />
-            <Route path="statistiques" element={<AdminAnalytics />} />
-            <Route path="journal" element={<AdminAuditLogs />} />
-          </Route>
-        </Routes>
-        </Suspense>
-      </ToastProvider>
+              <Route
+                path="/admin"
+                element={
+                  <RequireAdmin>
+                    <SpaceBoundary space="Administration">
+                      <AdminLayout />
+                    </SpaceBoundary>
+                  </RequireAdmin>
+                }
+              >
+                <Route index element={<AdminDashboard />} />
+                <Route path="produits" element={<AdminProducts />} />
+                <Route path="commandes" element={<AdminOrders />} />
+                <Route path="commandes/:id" element={<AdminOrderDetail />} />
+                <Route path="clients" element={<AdminCustomers />} />
+                <Route path="vendeurs" element={<AdminSellers />} />
+                <Route path="paiements" element={<AdminPayments />} />
+                <Route path="categories" element={<AdminCategories />} />
+                <Route path="collections" element={<AdminCollections />} />
+                <Route path="contact" element={<AdminContact />} />
+                <Route path="contenus" element={<AdminSiteContent />} />
+                <Route path="statistiques" element={<AdminAnalytics />} />
+                <Route path="journal" element={<AdminAuditLogs />} />
+                <Route path="messages" element={<MessagesPage />} />
+              </Route>
+            </Routes>
+          </Suspense>
+        </ToastProvider>
       </ErrorBoundary>
     </BrowserRouter>
   );

@@ -9,13 +9,11 @@ import type {
 } from "../../../shared/types/api";
 
 export const ordersApi = {
-  
   create: (input: CreateOrderInput, idempotencyKey?: string) =>
     api.post<OrderMutationResult>("/orders", input, { idempotencyKey }),
 
   /** Mes commandes (contrôle d'appartenance côté serveur, §34). */
-  mine: (query: OrderQuery = {}) =>
-    api.get<Paginated<Order>>("/orders/me" + buildQuery(query)),
+  mine: (query: OrderQuery = {}) => api.get<Paginated<Order>>("/orders/me" + buildQuery(query)),
 
   byId: (id: string) => api.get<Order>("/orders/" + id),
 

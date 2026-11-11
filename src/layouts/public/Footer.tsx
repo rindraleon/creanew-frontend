@@ -1,147 +1,158 @@
-import { useState } from "react";
-import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
-import type { LucideIcon } from "lucide-react";
-import { Facebook, Instagram, Send, Twitter, Youtube } from "lucide-react";
-import { useToast } from "../../shared/context/ToastContext";
+import { ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { siteContentApi } from "../../shared/api/siteContent.api";
 
-interface FooterLink {
+interface NavLink {
   label: string;
   to: string;
 }
 
-interface FooterColumn {
-  title: string;
-  links: FooterLink[];
-}
-
-const shopLinks: FooterLink[] = [
-  { label: "Tous les produits", to: "/boutique" },
-  { label: "Salon", to: "/boutique?categorie=salon" },
-  { label: "Chambre", to: "/boutique?categorie=chambre" },
-  { label: "Salle à manger", to: "/boutique?categorie=salle-a-manger" },
-  { label: "Bureau", to: "/boutique?categorie=bureau" },
-];
-
-const companyLinks: FooterLink[] = [
+const navLinks: NavLink[] = [
+  { label: "Accueil", to: "/" },
+  { label: "Boutique", to: "/boutique" },
+  { label: "Collections", to: "/collections" },
   { label: "À propos", to: "/a-propos" },
-  { label: "Nos collections", to: "/collections" },
   { label: "Blog", to: "/blog" },
   { label: "Contact", to: "/contact" },
 ];
 
-const supportLinks: FooterLink[] = [
-  { label: "Centre d'aide", to: "/contact" },
-  { label: "Livraison & retours", to: "/contact" },
-  { label: "Conditions générales", to: "/contact" },
-  { label: "Politique de confidentialité", to: "/contact" },
-];
-
-const columns: FooterColumn[] = [
-  { title: "Boutique", links: shopLinks },
-  { title: "Société", links: companyLinks },
-  { title: "Aide", links: supportLinks },
-];
-
-const socials: { icon: LucideIcon; label: string }[] = [
-  { icon: Facebook, label: "Facebook" },
-  { icon: Instagram, label: "Instagram" },
-  { icon: Twitter, label: "Twitter" },
-  { icon: Youtube, label: "YouTube" },
-];
+const LINK_CLASS =
+  "text-primary-fixed-dim transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:text-white";
 
 export default function Footer() {
-  const { toast } = useToast();
-  const [email, setEmail] = useState<string>("");
-
-  const subscribe = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast("Veuillez saisir une adresse email valide.", "error");
-      return;
-    }
-    setEmail("");
-    toast("Merci ! Vous êtes bien inscrit(e) à notre newsletter.");
+  const year = new Date().getFullYear();
+  const { data } = useQuery({
+    queryKey: ["site-content", "contact_info"],
+    queryFn: () => siteContentApi.byKey("contact_info"),
+  });
+  const values = data?.value ?? {};
+  const first = (value: unknown): string => {
+    if (typeof value === "string") return value.trim();
+    return Array.isArray(value) && typeof value[0] === "string" ? value[0].trim() : "";
+  };
+  const contact = {
+    email: first(values.email),
+    phone: first(values.phone),
+    address: first(values.showroom),
   };
 
   return (
-    <footer className="bg-primary text-on-primary">
-      {/* Newsletter */}
-      <div className="border-b border-on-primary/10">
-        <div className="container-app grid gap-6 py-12 md:grid-cols-2 md:items-center">
-          <div>
-            <h3 className="font-display text-headline-md">Restons en contact</h3>
-            <p className="mt-2 text-body-md text-primary-fixed-dim">
-              Recevez nos nouveautés, conseils déco et offres exclusives. Une fois par mois, pas plus.
-            </p>
-          </div>
-          <form onSubmit={subscribe} className="flex gap-2">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Votre adresse email"
-              aria-label="Votre adresse email"
-              className="h-12 w-full rounded-lg border border-on-primary/20 bg-white/10 px-4 text-body-md text-on-primary outline-none transition placeholder:text-primary-fixed-dim/70 focus:border-secondary-fixed-dim focus:ring-2 focus:ring-secondary-fixed-dim/30"
-            />
-            <button
-              type="submit"
-              className="inline-flex h-12 shrink-0 items-center gap-2 rounded-lg bg-secondary-fixed-dim px-5 font-semibold text-primary transition-colors hover:bg-white"
-            >
-              <Send size={17} /> <span className="hidden sm:inline">S'inscrire</span>
-            </button>
-          </form>
-        </div>
+    <footer className="relative isolate overflow-hidden bg-primary text-on-primary">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 flex items-center justify-center"
+      >
+        <span className="select-none whitespace-nowrap text-[6rem] font-black leading-none tracking-[-0.08em] text-white/[0.04] sm:text-[9rem] lg:text-[12rem]">
+          CreaNew
+        </span>
       </div>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-24 top-1/2 size-72 -translate-y-1/2 rounded-full bg-secondary/10 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-24 top-1/2 size-72 -translate-y-1/2 rounded-full bg-secondary/10 blur-3xl"
+      />
 
-      {/* Colonnes */}
-      <div className="container-app grid gap-10 py-14 sm:grid-cols-2 md:grid-cols-4">
-        <div>
-          <Link to="/" className="font-display text-2xl font-bold">
-            MobilierShop
-          </Link>
-          <p className="mt-4 max-w-xs text-body-md text-primary-fixed-dim">
-            Du mobilier conçu pour le confort, fabriqué pour durer — pensé pour la vie que vous menez.
-          </p>
-          <div className="mt-6 flex gap-3">
-            {socials.map(({ icon: Icon, label }) => (
-              <a
-                key={label}
-                href="#"
-                aria-label={label}
-                onClick={(e) => e.preventDefault()}
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-on-primary/15 text-primary-fixed-dim transition-all hover:border-secondary-fixed-dim hover:text-white"
-              >
-                <Icon size={18} />
-              </a>
-            ))}
+      <div className="container-app relative py-8">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
+          <div className="flex items-center gap-3">
+            <Link
+              to="/"
+              className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white p-1 transition-transform duration-200 hover:scale-[1.04]"
+              aria-label="Accueil CreaNew"
+            >
+              <img
+                src="/logo-creanew.jpg"
+                alt="CreaNew — Canapés d'angle"
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full rounded-full object-cover"
+                width={36}
+                height={36}
+              />
+            </Link>
+            <div className="min-w-0">
+              <p className="font-display text-body font-bold leading-tight tracking-tight text-white">
+                Crea<span className="text-secondary">New</span>
+              </p>
+              <p className="text-caption leading-5 text-primary-fixed-dim">
+                Canapés d&apos;angle — Donnez une nouvelle vie à votre salon
+              </p>
+            </div>
           </div>
-        </div>
 
-        {columns.map((col) => (
-          <nav key={col.title} aria-label={col.title}>
-            <h4 className="mb-5 text-label-md uppercase tracking-widest text-secondary-fixed-dim">{col.title}</h4>
-            <ul className="space-y-3">
-              {col.links.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    to={link.to}
-                    className="inline-block text-body-md text-primary-fixed-dim transition-all hover:translate-x-1 hover:text-white"
-                  >
-                    {link.label}
+          <nav aria-label="Navigation du pied de page" className="lg:pt-1">
+            <ul className="flex flex-wrap items-center gap-x-5 gap-y-2 text-body-sm">
+              {navLinks.map((item) => (
+                <li key={item.to}>
+                  <Link to={item.to} className={LINK_CLASS}>
+                    {item.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </nav>
-        ))}
-      </div>
 
-      <div className="border-t border-on-primary/10">
-        <div className="container-app flex flex-col items-center justify-between gap-4 py-6 text-body-sm text-primary-fixed-dim/70 md:flex-row">
-          <p>© 2026 MobilierShop. Tous droits réservés.</p>
-          <p>Conçu avec soin à Antananarivo — fabriqué à Madagascar.</p>
+          <div className="flex items-center gap-2 lg:pt-0.5">
+            <Link
+              to="/contact"
+              className="group ml-1 inline-flex h-9 items-center gap-1.5 rounded-lg border border-secondary/30 bg-secondary/15 px-3 text-label-sm font-semibold text-secondary-fixed-dim transition-colors duration-200 hover:border-secondary/40 hover:bg-secondary/20 hover:text-secondary"
+            >
+              Nous contacter
+              <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+            </Link>
+          </div>
         </div>
+
+        <ul className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/10 pt-5 text-body-sm text-primary-fixed-dim">
+          {contact.address && (
+            <li className="flex items-center gap-2">
+              <MapPin className="size-4 shrink-0 text-secondary/80" strokeWidth={1.8} />
+              <span className="leading-5">{contact.address}</span>
+            </li>
+          )}
+          {contact.phone && (
+            <li className="flex items-center gap-2">
+              <Phone className="size-4 shrink-0 text-secondary/80" strokeWidth={1.8} />
+              <a href={`tel:${contact.phone.replace(/\s+/g, "")}`} className={LINK_CLASS}>
+                {contact.phone}
+              </a>
+            </li>
+          )}
+          {contact.email && (
+            <li className="flex items-center gap-2">
+              <Mail className="size-4 shrink-0 text-secondary/80" strokeWidth={1.8} />
+              <a href={`mailto:${contact.email}`} className={`${LINK_CLASS} break-all`}>
+                {contact.email}
+              </a>
+            </li>
+          )}
+        </ul>
+
+        <div className="mt-5 flex flex-col gap-2 border-t border-white/10 pt-4 text-caption text-primary-fixed-dim/70 sm:flex-row sm:items-center sm:justify-between">
+          <p>© {year} CreaNew — Canapés d&apos;angle. Tous droits réservés.</p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <Link to="/livraison-retours" className={LINK_CLASS}>
+              Livraison & retours
+            </Link>
+            <span aria-hidden="true" className="h-1 w-1 rounded-full bg-white/20" />
+            <Link to="/conditions-generales" className={LINK_CLASS}>
+              Mentions légales
+            </Link>
+            <span aria-hidden="true" className="h-1 w-1 rounded-full bg-white/20" />
+            <Link to="/confidentialite" className={LINK_CLASS}>
+              Politique de confidentialité
+            </Link>
+          </div>
+        </div>
+      </div>
+      <div className="bg-secondary py-2 text-center">
+        <p className="text-label-sm font-semibold uppercase tracking-widest text-on-secondary">
+          Donnez une nouvelle vie à votre salon
+        </p>
       </div>
     </footer>
   );

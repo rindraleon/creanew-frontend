@@ -8,7 +8,8 @@ export default function NotFound() {
       <p className="font-display text-8xl text-secondary/30 md:text-9xl">404</p>
       <h1 className="mt-4 font-display text-display-md text-primary">Cette page a déménagé</h1>
       <p className="mt-3 max-w-md text-body-lg text-on-surface-variant">
-        La page que vous cherchez n'existe pas ou plus. Mais notre boutique, elle, vous attend — canapés compris.
+        La page que vous cherchez n'existe pas ou plus. Mais notre boutique, elle, vous attend —
+        canapés compris.
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-4">
         <Button as={Link} to="/" variant="accent" size="lg">

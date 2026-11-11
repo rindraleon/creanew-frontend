@@ -18,7 +18,9 @@ export function RequireAuth({ children }: GuardProps) {
   // rechargement sur /espace-client renverrait systématiquement à la connexion.
   if (isBooting) return <FullPageLoader />;
   if (!isAuthenticated) {
-    return <Navigate to="/connexion" state={{ from: location.pathname + location.search }} replace />;
+    return (
+      <Navigate to="/connexion" state={{ from: location.pathname + location.search }} replace />
+    );
   }
   return <>{children}</>;
 }
@@ -30,7 +32,9 @@ export function RequireRole({ children, roles }: GuardProps & { roles: UserRole[
 
   if (isBooting) return <FullPageLoader />;
   if (!isAuthenticated) {
-    return <Navigate to="/connexion" state={{ from: location.pathname + location.search }} replace />;
+    return (
+      <Navigate to="/connexion" state={{ from: location.pathname + location.search }} replace />
+    );
   }
   if (!hasRole(...roles)) return <AccessDenied />;
   return <>{children}</>;
@@ -53,7 +57,9 @@ export function RequireSellerApproval({ children }: GuardProps) {
 
   if (isBooting) return <FullPageLoader />;
   if (!isAuthenticated) {
-    return <Navigate to="/connexion" state={{ from: location.pathname + location.search }} replace />;
+    return (
+      <Navigate to="/connexion" state={{ from: location.pathname + location.search }} replace />
+    );
   }
   if (isAdmin) return <>{children}</>;
   if (!isApprovedSeller) {

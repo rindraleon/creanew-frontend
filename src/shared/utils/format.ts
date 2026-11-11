@@ -1,5 +1,3 @@
-
-
 const mgaFormatter = new Intl.NumberFormat("fr-FR", {
   maximumFractionDigits: 0,
 });
@@ -25,15 +23,8 @@ export const formatDate = (
   options: Intl.DateTimeFormatOptions = { day: "numeric", month: "long", year: "numeric" },
 ): string => {
   const date = new Date(value);
-  // `toLocaleDateString` ne connaît pas l'heure : il rejette `timeStyle`, `hour`,
-  // `minute` et `second` en levant une `TypeError`. On bascule donc sur
-  // `toLocaleString` dès qu'une composante horaire est demandée — sinon un
-  // simple journal d'audit fait tomber toute la page.
   const wantsTime =
-    "timeStyle" in options ||
-    "hour" in options ||
-    "minute" in options ||
-    "second" in options;
+    "timeStyle" in options || "hour" in options || "minute" in options || "second" in options;
   return wantsTime
     ? date.toLocaleString("fr-FR", options)
     : date.toLocaleDateString("fr-FR", options);
@@ -62,9 +53,7 @@ export const formatRelative = (value: string | Date): string => {
 
 /** Remise en pourcentage entre prix courant et prix barré. */
 export const discountRate = (price: number, compareAtPrice: number | null | undefined): number =>
-  compareAtPrice && compareAtPrice > price
-    ? Math.round((1 - price / compareAtPrice) * 100)
-    : 0;
+  compareAtPrice && compareAtPrice > price ? Math.round((1 - price / compareAtPrice) * 100) : 0;
 
 export const initials = (name = ""): string =>
   name

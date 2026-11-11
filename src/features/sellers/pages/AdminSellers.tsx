@@ -149,7 +149,9 @@ export default function AdminSellers() {
                     <td className="px-4 py-3">
                       <StatusBadge kind="seller" status={seller.status} />
                     </td>
-                    <td className="px-4 py-3 text-on-surface-variant">{formatDate(seller.createdAt)}</td>
+                    <td className="px-4 py-3 text-on-surface-variant">
+                      {formatDate(seller.createdAt)}
+                    </td>
                     <td className="px-4 py-3">
                       <span className="flex items-center justify-end gap-2">
                         <Link
@@ -183,7 +185,11 @@ export default function AdminSellers() {
                           </Button>
                         )}
                         {seller.status === "suspended" && (
-                          <Button size="sm" variant="outline" onClick={() => setConfirmApprove(seller)}>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setConfirmApprove(seller)}
+                          >
                             Réactiver
                           </Button>
                         )}

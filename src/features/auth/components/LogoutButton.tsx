@@ -16,22 +16,6 @@ interface LogoutButtonProps {
   onLoggedOut?: () => void;
 }
 
-/**
- * Déconnexion avec confirmation explicite.
- *
- * Exigence du cahier des charges : aucune déconnexion ne doit être déclenchée
- * par un simple clic. Le dialogue rappelle ce qui va se passer, puis la
- * déconnexion effective :
- *   1. appel de `POST /auth/logout` (révocation du refresh token) ;
- *   2. suppression des jetons en mémoire ;
- *   3. remise à zéro de l'utilisateur et vidage du cache React Query ;
- *   4. redirection vers la page publique ;
- *   5. `replace: true` — le bouton « retour » du navigateur ne peut donc pas
- *      ramener l'utilisateur sur une page privée.
- *
- * Aucune donnée sensible n'est conservée côté client : les jetons vivent en
- * mémoire et le refresh token est un cookie `httpOnly` que le serveur efface.
- */
 export default function LogoutButton({
   label = "Se déconnecter",
   compact = false,
@@ -53,7 +37,7 @@ export default function LogoutButton({
       setOpen(false);
       onLoggedOut?.();
       // `replace` empêche le retour arrière vers l'espace privé.
-      navigate(redirectTo, { replace: true });
+      void navigate(redirectTo, { replace: true });
     }
   };
 

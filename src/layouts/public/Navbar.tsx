@@ -5,6 +5,7 @@ import {
   Heart,
   LayoutDashboard,
   Menu,
+  MessageCircle,
   Package,
   Search,
   ShoppingBag,
@@ -26,7 +27,6 @@ interface IconBtnProps {
   onClick: () => void;
   label: string;
   badge?: number;
-  /** Classes de mise en page (ex. masquer le bouton sous `sm`). */
   className?: string;
   children: ReactNode;
 }
@@ -51,7 +51,6 @@ function IconBtn({ onClick, label, badge = 0, className = "", children }: Readon
 export default function Navbar() {
   const { isAuthenticated, user, isAdmin, isSeller, isApprovedSeller } = useAuth();
   const { openCart } = useCartDrawer();
-  // Le panier est serveur : on ne le requête que pour une session active.
   const { data: cart } = useCart(isAuthenticated);
   const { data: wishlist } = useWishlist();
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
@@ -82,19 +81,33 @@ export default function Navbar() {
 
   return (
     <>
-      
       <header
-        className={`sticky top-0 z-50 border-b border-surface-container-highest bg-surface/90 backdrop-blur-md transition-all duration-300 ${
-          scrolled ? "py-1.5 shadow-card" : "py-3.5"
+        className={`sticky top-0 z-50 border-b border-surface-container-highest bg-surface/95 backdrop-blur-md transition-all duration-300 ${
+          scrolled ? "py-1.5 shadow-card" : "py-2.5"
         }`}
       >
         <div className="container-app flex items-center justify-between gap-4">
+          {/* Logo CreaNew — identité officielle */}
           <Link
             to="/"
-            className="shrink-0 font-display text-xl font-bold tracking-tight text-primary sm:text-2xl"
-            aria-label="MOBILIER-SHOP — retour à l'accueil"
+            className="flex shrink-0 items-center gap-3"
+            aria-label="CreaNew — Canapés d'angle — retour à l'accueil"
           >
-            Mobilier<span className="text-secondary">Shop</span>
+            <img
+              src="/logo-creanew.jpg"
+              alt="CreaNew"
+              className="h-10 w-10 rounded-full object-cover shadow-card sm:h-11 sm:w-11"
+              width={44}
+              height={44}
+            />
+            <span className="flex flex-col leading-none">
+              <span className="font-display text-[20px] font-bold tracking-tight text-primary sm:text-[22px]">
+                Crea<span className="text-secondary">New</span>
+              </span>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-secondary sm:text-[11px]">
+                Canapés d'Angle
+              </span>
+            </span>
           </Link>
 
           <nav className="hidden items-center gap-7 lg:flex" aria-label="Navigation principale">
@@ -121,7 +134,7 @@ export default function Navbar() {
               <Search size={21} />
             </IconBtn>
             <IconBtn
-              onClick={() => navigate("/favoris")}
+              onClick={() => void navigate("/favoris")}
               label="Mes favoris"
               badge={wishlistCount}
               className="hidden sm:flex"
@@ -132,7 +145,18 @@ export default function Navbar() {
               <ShoppingBag size={21} />
             </IconBtn>
 
-            {isAuthenticated && <NotificationsBell />}
+            {isAuthenticated && (
+              <>
+                <IconBtn
+                  onClick={() => void navigate("/messages")}
+                  label="Messagerie"
+                  className="hidden sm:flex"
+                >
+                  <MessageCircle size={21} />
+                </IconBtn>
+                <NotificationsBell />
+              </>
+            )}
 
             {user ? (
               <div className="relative ml-1 hidden md:block" ref={userMenuRef}>
@@ -144,11 +168,11 @@ export default function Navbar() {
                 >
                   <Avatar name={user.fullName} size="sm" />
                   <span className="hidden max-w-[110px] truncate text-body-sm font-medium xl:inline">
-                    {user.firstName}
+                    {user.username ?? user.firstName ?? user.fullName}
                   </span>
                 </button>
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-60 origin-top-right rounded-lg border border-outline-variant/50 bg-white p-2 shadow-card-hover animate-scale-in">
+                  <div className="absolute right-0 mt-2 w-64 origin-top-right rounded-lg border border-outline-variant/50 bg-white p-2 shadow-card-hover animate-scale-in">
                     <div className="border-b border-surface-container-highest px-3 py-2.5">
                       <p className="truncate text-body-sm font-semibold text-primary">
                         {user.fullName}
@@ -185,6 +209,14 @@ export default function Navbar() {
                         </Link>
                       )}
 
+                      <Link
+                        to="/messages"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-body-sm text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary"
+                      >
+                        <MessageCircle size={17} /> Messagerie
+                      </Link>
+
                       {!isAdmin && !isSeller && (
                         <>
                           <Link
@@ -212,7 +244,7 @@ export default function Navbar() {
             ) : (
               <Link
                 to="/connexion"
-                className="ml-2 hidden items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-body-sm font-semibold text-on-primary transition-all duration-300 hover:bg-secondary hover:shadow-card-hover md:inline-flex"
+                className="ml-2 hidden items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-body-sm font-semibold text-on-primary transition-all duration-300 hover:bg-secondary hover:shadow-gold md:inline-flex"
               >
                 <User size={16} /> Connexion
               </Link>

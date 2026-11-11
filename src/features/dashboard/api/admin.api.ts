@@ -74,12 +74,7 @@ export interface AdminAnalyticsResponse {
   newCustomers?: number;
 }
 
-export type AdminAnalyticsType =
-  | "sales"
-  | "orders"
-  | "products"
-  | "customers"
-  | "sellers";
+export type AdminAnalyticsType = "sales" | "orders" | "products" | "customers" | "sellers";
 
 export const adminApi = {
   dashboard: (period: AnalyticsRange = "30d") =>
@@ -98,8 +93,7 @@ export const adminApi = {
   suspendUser: (id: string, reason?: string) =>
     api.post<UserProfile>("/admin/users/" + id + "/suspend", reason ? { reason } : {}),
 
-  reactivateUser: (id: string) =>
-    api.post<UserProfile>("/admin/users/" + id + "/reactivate", {}),
+  reactivateUser: (id: string) => api.post<UserProfile>("/admin/users/" + id + "/reactivate", {}),
 
   /* --- Vendeurs --- */
   sellers: () => api.get<Paginated<Seller>>("/admin/sellers"),

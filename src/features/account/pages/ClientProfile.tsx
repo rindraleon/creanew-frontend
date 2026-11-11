@@ -6,6 +6,7 @@ import { changePasswordSchema, profileSchema } from "../../auth/schemas/auth";
 import type { ChangePasswordFormInput, ProfileFormInput } from "../../auth/schemas/auth";
 import { formatDate } from "../../../shared/utils/format";
 import { errorMessage } from "../../../shared/utils/errors";
+import { ApiError } from "../../../shared/api/client";
 import { useToast } from "../../../shared/context/ToastContext";
 import Button from "../../../components/ui/Button";
 import { Field, Input } from "../../../components/ui/Form";
@@ -29,7 +30,8 @@ export default function ClientProfile() {
     resolver: zodResolver(profileSchema),
     values: profile
       ? {
-          firstName: profile.firstName,
+          username: profile.username,
+          firstName: profile.firstName ?? "",
           lastName: profile.lastName,
           email: profile.email,
           phone: profile.phone ?? "",
@@ -53,13 +55,16 @@ export default function ClientProfile() {
   const onProfileSubmit = profileForm.handleSubmit(async (values) => {
     try {
       await updateProfile.mutateAsync({
-        firstName: values.firstName,
+        username: values.username,
+        firstName: values.firstName ?? "",
         lastName: values.lastName,
         email: values.email,
         phone: values.phone || undefined,
       });
     } catch (error) {
-      toast(errorMessage(error), "error");
+      if (error instanceof ApiError && error.fieldError("email"))
+        profileForm.setError("email", { message: error.fieldError("email") });
+      else toast(errorMessage(error), "error");
     }
   });
 
@@ -83,7 +88,9 @@ export default function ClientProfile() {
         <div className="flex items-center gap-4">
           <Avatar name={profile.fullName} size="lg" />
           <div className="min-w-0">
-            <p className="truncate font-display text-headline-sm text-primary">{profile.fullName}</p>
+            <p className="truncate font-display text-headline-sm text-primary">
+              {profile.fullName}
+            </p>
             <p className="truncate text-body-sm text-on-surface-variant">{profile.email}</p>
           </div>
           <div className="ml-auto flex flex-col items-end gap-1.5">
@@ -100,14 +107,32 @@ export default function ClientProfile() {
           <User size={18} className="text-secondary" /> Informations personnelles
         </h2>
 
-        <form onSubmit={(event) => void onProfileSubmit(event)} className="mt-5 grid gap-4 sm:grid-cols-2" noValidate>
-          <Field label="Prénom" required error={profileForm.formState.errors.firstName?.message}>
+        <form
+          onSubmit={(event) => void onProfileSubmit(event)}
+          className="mt-5 grid gap-4 sm:grid-cols-2"
+          noValidate
+        >
+          <Field
+            label="Nom d’utilisateur"
+            required
+            error={profileForm.formState.errors.username?.message}
+          >
+            <Input {...profileForm.register("username")} />
+          </Field>
+          <Field
+            label="Prénom (facultatif)"
+            error={profileForm.formState.errors.firstName?.message}
+          >
             <Input {...profileForm.register("firstName")} />
           </Field>
           <Field label="Nom" required error={profileForm.formState.errors.lastName?.message}>
             <Input {...profileForm.register("lastName")} />
           </Field>
-          <Field label="Adresse e-mail" required error={profileForm.formState.errors.email?.message}>
+          <Field
+            label="Adresse e-mail"
+            required
+            error={profileForm.formState.errors.email?.message}
+          >
             <Input type="email" {...profileForm.register("email")} />
           </Field>
           <Field label="Téléphone" error={profileForm.formState.errors.phone?.message}>
@@ -127,14 +152,22 @@ export default function ClientProfile() {
           <KeyRound size={18} className="text-secondary" /> Changer de mot de passe
         </h2>
 
-        <form onSubmit={(event) => void onPasswordSubmit(event)} className="mt-5 grid gap-4 sm:grid-cols-2" noValidate>
+        <form
+          onSubmit={(event) => void onPasswordSubmit(event)}
+          className="mt-5 grid gap-4 sm:grid-cols-2"
+          noValidate
+        >
           <Field
             label="Mot de passe actuel"
             required
             error={passwordForm.formState.errors.currentPassword?.message}
             className="sm:col-span-2"
           >
-            <Input type="password" autoComplete="current-password" {...passwordForm.register("currentPassword")} />
+            <Input
+              type="password"
+              autoComplete="current-password"
+              {...passwordForm.register("currentPassword")}
+            />
           </Field>
           <Field
             label="Nouveau mot de passe"
@@ -142,14 +175,22 @@ export default function ClientProfile() {
             hint="Au moins 10 caractères, dont une lettre et un chiffre."
             error={passwordForm.formState.errors.newPassword?.message}
           >
-            <Input type="password" autoComplete="new-password" {...passwordForm.register("newPassword")} />
+            <Input
+              type="password"
+              autoComplete="new-password"
+              {...passwordForm.register("newPassword")}
+            />
           </Field>
           <Field
             label="Confirmer"
             required
             error={passwordForm.formState.errors.confirmPassword?.message}
           >
-            <Input type="password" autoComplete="new-password" {...passwordForm.register("confirmPassword")} />
+            <Input
+              type="password"
+              autoComplete="new-password"
+              {...passwordForm.register("confirmPassword")}
+            />
           </Field>
 
           <div className="sm:col-span-2">

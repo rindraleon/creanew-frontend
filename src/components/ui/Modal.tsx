@@ -21,14 +21,7 @@ interface ModalProps {
   size?: ModalSize;
 }
 
-export default function Modal({
-  open,
-  onClose,
-  title,
-  children,
-  footer,
-  size = "md",
-}: ModalProps) {
+export default function Modal({ open, onClose, title, children, footer, size = "md" }: ModalProps) {
   const panelRef = useFocusTrap(open, onClose);
 
   useEffect(() => {
@@ -48,7 +41,10 @@ export default function Modal({
       aria-modal="true"
       aria-label={typeof title === "string" ? title : "Dialogue"}
     >
-      <div className="absolute inset-0 bg-on-background/40 backdrop-blur-sm animate-fade-in" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-on-background/40 backdrop-blur-sm animate-fade-in"
+        onClick={onClose}
+      />
       <div
         ref={panelRef}
         tabIndex={-1}

@@ -179,8 +179,7 @@ export default function AdminPayments() {
       >
         <div className="space-y-3">
           <p className="text-body-sm text-on-surface-variant">
-            Réf. {toReject?.transactionReference} ·{" "}
-            {toReject ? formatPrice(toReject.amount) : ""}
+            Réf. {toReject?.transactionReference} · {toReject ? formatPrice(toReject.amount) : ""}
           </p>
           <Field label="Motif" required>
             <Textarea
@@ -221,7 +220,8 @@ export default function AdminPayments() {
           </p>
           <p>
             Opérateur :{" "}
-            {PAYMENT_PROVIDERS.find((p) => p.id === toVerify?.provider)?.label ?? toVerify?.provider}
+            {PAYMENT_PROVIDERS.find((p) => p.id === toVerify?.provider)?.label ??
+              toVerify?.provider}
           </p>
           {toVerify?.payerPhone && <p>Payé depuis : {toVerify.payerPhone}</p>}
           <p className="rounded-lg bg-amber-50 p-3 text-amber-800">

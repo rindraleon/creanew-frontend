@@ -23,19 +23,12 @@ export interface AuthContextValue {
   isApprovedSeller: boolean;
   sellerStatus: SellerStatus | null;
   hasRole: (...roles: UserRole[]) => boolean;
-  login: (email: string, password: string) => Promise<AuthUser>;
-  register: (input: RegisterInput) => Promise<AuthUser>;
+  login: (identifier: string, password: string) => Promise<AuthUser>;
+  register: (input: RegisterInput) => Promise<void>;
   logout: () => Promise<void>;
   /** Met à jour l'utilisateur en mémoire (après `PATCH /users/me`). */
   setUser: (user: AuthUser) => void;
-  /**
-   * Force la relecture de la session côté serveur puis remet le cache à zéro.
-   * Indispensable quand le rôle change hors du navigateur : après validation
-   * d'une demande vendeur par un administrateur, `users.role` passe à `seller`
-   * en base mais le jeton d'accès en mémoire — émis 15 min plus tôt — porte
-   * encore `customer`, donc `/vendeur` répond 403. `refresh` réémet un jeton
-   * fidèle à la base : c'est la seule sortie propre, à part attendre 15 minutes.
-   */
+
   refreshSession: () => Promise<void>;
 }
 
@@ -57,7 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .refresh()
       .then((session) => {
         if (cancelled) return;
-        setTokens(session);
+        if (session) setTokens(session);
+        else clearTokens();
         // Défensif : une session sans utilisateur équivaut à un visiteur.
         setUserState(session?.user ?? null);
       })
@@ -74,7 +68,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  
   useEffect(
     () =>
       onSessionChange((token) => {
@@ -90,11 +83,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const setUser = useCallback((next: AuthUser) => setUserState(next), []);
 
-  /**
-   * Recharge la session depuis le serveur et purge le cache.
-   * Voir `AuthContextValue.refreshSession` : c'est la sortie d'un rôle qui a
-   * changé entre deux jetons (validation vendeur par un administrateur).
-   */
   const refreshSession = useCallback(async (): Promise<void> => {
     try {
       // 204 sans contenu quand la session a expiré : d'où le `?.` défensif.
@@ -112,8 +100,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [queryClient]);
 
   const login = useCallback(
-    async (email: string, password: string): Promise<AuthUser> => {
-      const session = await authApi.login(email, password);
+    async (identifier: string, password: string): Promise<AuthUser> => {
+      const session = await authApi.login(identifier, password);
       setTokens(session);
       setUserState(session.user);
       // Les données privées de l'utilisateur précédent ne doivent pas fuiter.
@@ -123,16 +111,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [queryClient],
   );
 
-  const register = useCallback(
-    async (input: RegisterInput): Promise<AuthUser> => {
-      const session = await authApi.register(input);
-      setTokens(session);
-      setUserState(session.user);
-      queryClient.clear();
-      return session.user;
-    },
-    [queryClient],
-  );
+  const register = useCallback(async (input: RegisterInput): Promise<void> => {
+    // L’inscription est suivie d’une connexion explicite avec les identifiants.
+    await authApi.register(input);
+  }, []);
 
   const logout = useCallback(async (): Promise<void> => {
     try {

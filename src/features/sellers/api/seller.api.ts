@@ -46,9 +46,7 @@ export const sellerApi = {
   order: (id: string) => api.get<Order>("/seller/orders/" + id),
 
   analytics: (type: SellerAnalyticsType = "sales", period: SellerPeriod = "30d") =>
-    api.get<SellerAnalyticsResponse>(
-      "/seller/analytics" + buildQuery({ type, period }),
-    ),
+    api.get<SellerAnalyticsResponse>("/seller/analytics" + buildQuery({ type, period })),
 
   sales: (period: SellerPeriod = "30d") =>
     api.get<{ date: string; revenue: number; orders: number }[]>(

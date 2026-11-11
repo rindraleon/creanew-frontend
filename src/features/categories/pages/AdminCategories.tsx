@@ -26,11 +26,14 @@ const categorySchema = z.object({
     .string()
     .trim()
     .max(140)
-    .regex(/^[a-z0-9-]*$/, "Le slug ne peut contenir que des lettres minuscules, chiffres et tirets.")
+    .regex(
+      /^[a-z0-9-]*$/,
+      "Le slug ne peut contenir que des lettres minuscules, chiffres et tirets.",
+    )
     .optional()
     .or(z.literal("")),
   description: z.string().trim().max(500).optional().or(z.literal("")),
-  position: z.coerce.number().int().min(0).optional(),
+  position: z.coerce.number<number>().int().min(0).optional(),
   isActive: z.boolean(),
 });
 
@@ -142,7 +145,9 @@ export default function AdminCategories() {
                       {category.isActive ? "Active" : "Inactive"}
                     </Badge>
                   </td>
-                  <td className="px-4 py-3 text-on-surface-variant">{formatDate(category.createdAt)}</td>
+                  <td className="px-4 py-3 text-on-surface-variant">
+                    {formatDate(category.createdAt)}
+                  </td>
                   <td className="px-4 py-3">
                     <span className="flex items-center justify-end gap-1">
                       <button

@@ -40,10 +40,6 @@ export default function Checkout() {
   const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("standard");
   const [saveNewAddress, setSaveNewAddress] = useState<boolean>(true);
 
-  // Le carnet arrive après le premier rendu : dès qu'il est connu, on présélectionne
-  // l'adresse par défaut. Sans cela, un client habitué devrait re-choisir son
-  // adresse à chaque commande, et un client sans adresse enregistrée verrait le
-  // formulaire « nouvelle adresse » s'ouvrir inutilement.
   useEffect(() => {
     if (addresses.length === 0) return;
     setAddressId((current) => {
@@ -93,7 +89,7 @@ export default function Checkout() {
 
   const onPlaceOrder = async (input: CreateOrderInput): Promise<void> => {
     const order = await createOrder.mutateAsync(input);
-    navigate("/commande/succes/" + order.id, { replace: true });
+    void navigate("/commande/succes/" + order.id, { replace: true });
   };
 
   const onSubmitNewAddress = async (values: AddressFormInput): Promise<void> => {
@@ -124,10 +120,6 @@ export default function Checkout() {
     });
   };
 
-  // La validation react-hook-form ne s'applique qu'au formulaire d'adresse
-  // ponctuelle : si le client choisit une adresse enregistrée, il n'y a aucun
-  // champ à saisir. Sans cette distinction, les champs invisibles (vides)
-  // échoueraient la validation et bloqueraient la soumission de la commande.
   const onSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     if (addressId === "new") {
       void addressForm.handleSubmit(async (values) => {
@@ -169,7 +161,9 @@ export default function Checkout() {
             >
               {step.done ? <Check size={14} /> : i + 1}
             </span>
-            <span className={step.active ? "font-semibold text-primary" : "text-on-surface-variant"}>
+            <span
+              className={step.active ? "font-semibold text-primary" : "text-on-surface-variant"}
+            >
               {step.label}
             </span>
             {i < steps.length - 1 && <span className="h-px w-6 bg-outline-variant sm:w-10" />}
@@ -287,20 +281,13 @@ export default function Checkout() {
                 >
                   <Input {...addressForm.register("addressLine2")} />
                 </Field>
-                <Field
-                  label="Code postal"
-                  error={addressForm.formState.errors.postalCode?.message}
-                >
+                <Field label="Code postal" error={addressForm.formState.errors.postalCode?.message}>
                   <Input {...addressForm.register("postalCode")} />
                 </Field>
                 <Field label="Ville" required error={addressForm.formState.errors.city?.message}>
                   <Input {...addressForm.register("city")} />
                 </Field>
-                <Field
-                  label="Pays"
-                  required
-                  error={addressForm.formState.errors.country?.message}
-                >
+                <Field label="Pays" required error={addressForm.formState.errors.country?.message}>
                   <Input {...addressForm.register("country")} />
                 </Field>
 
@@ -368,7 +355,11 @@ export default function Checkout() {
                   <li key={item.id} className="flex gap-3">
                     <span className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-surface-container">
                       {image ? (
-                        <img src={image} alt={item.product.name} className="h-full w-full object-cover" />
+                        <img
+                          src={image}
+                          alt={item.product.name}
+                          className="h-full w-full object-cover"
+                        />
                       ) : null}
                     </span>
                     <span className="min-w-0 flex-1">

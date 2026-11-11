@@ -30,8 +30,16 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[90] lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
-      <div className="absolute inset-0 bg-on-background/40 backdrop-blur-sm animate-fade-in" onClick={onClose} />
+    <div
+      className="fixed inset-0 z-[90] lg:hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menu"
+    >
+      <div
+        className="absolute inset-0 bg-on-background/40 backdrop-blur-sm animate-fade-in"
+        onClick={onClose}
+      />
       <aside className="absolute left-0 top-0 flex h-full w-full max-w-xs flex-col bg-surface-container-lowest shadow-drawer">
         <div className="flex items-center justify-between border-b border-surface-container-highest px-5 py-4">
           <span className="font-display text-xl font-bold text-primary">Menu</span>
@@ -155,11 +163,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
 
         {isAuthenticated && (
           <div className="border-t border-surface-container-highest p-3">
-            <LogoutButton
-              compact
-              className="w-full px-3 py-3 text-body-md"
-              onLoggedOut={onClose}
-            />
+            <LogoutButton compact className="w-full px-3 py-3 text-body-md" onLoggedOut={onClose} />
           </div>
         )}
       </aside>

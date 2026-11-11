@@ -11,11 +11,7 @@ interface EmptyStateProps {
   actionTo?: string;
   onAction?: () => void;
   actionVariant?: ButtonVariant;
-  /**
-   * Niveau de titre du libellé. À passer à « h1 » quand l'état vide EST le
-   * contenu principal de la page (erreur de chargement, ressource introuvable) :
-   * sans cela, ces pages n'auraient aucun <h1> du tout.
-   */
+
   as?: "h1" | "h2" | "h3";
 }
 

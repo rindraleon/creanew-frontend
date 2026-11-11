@@ -21,13 +21,13 @@ export default function Reveal({ children, delay = 0, className = "", as }: Reve
           observer.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
-  const Tag = (as ?? "div");
+  const Tag = as ?? "div";
 
   return (
     <Tag ref={ref} style={{ transitionDelay: `${delay}s` }} className={`fade-up ${className}`}>

@@ -32,7 +32,7 @@ export function useMarkNotificationRead() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });
     },
-    onError: (error: unknown) => void(errorMessage(error)),
+    onError: (error: unknown) => void errorMessage(error),
   });
 }
 

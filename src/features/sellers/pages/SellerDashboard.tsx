@@ -104,7 +104,9 @@ export default function SellerDashboard() {
                     </span>
                   </span>
                   <OrderStatusBadge status={order.status} />
-                  <span className="font-display text-lg text-primary">{formatPrice(order.total)}</span>
+                  <span className="font-display text-lg text-primary">
+                    {formatPrice(order.total)}
+                  </span>
                 </Link>
               </li>
             ))}

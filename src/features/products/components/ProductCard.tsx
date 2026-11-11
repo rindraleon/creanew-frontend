@@ -4,7 +4,12 @@ import { useAddCartItem } from "../../cart/hooks/useCart";
 import { useToggleWishlist } from "../../account/hooks/useWishlist";
 import { useAuth } from "../../auth/context/AuthProvider";
 import { discountRate, formatPrice } from "../../../shared/utils/format";
-import { isLowStock, isPurchasable, productImageUrl, toNumber } from "../../../shared/utils/product";
+import {
+  isLowStock,
+  isPurchasable,
+  productImageUrl,
+  toNumber,
+} from "../../../shared/utils/product";
 import Stars from "../../../components/ui/Stars";
 import type { Product } from "../../../shared/types/api";
 
@@ -29,7 +34,7 @@ export default function ProductCard({ product, wishlisted = false }: Readonly<Pr
   const handleAdd = (): void => {
     // Le panier est serveur : il exige une session (§8).
     if (!isAuthenticated) {
-      navigate("/connexion", { state: { from: "/boutique" } });
+      void navigate("/connexion", { state: { from: "/boutique" } });
       return;
     }
     if (!purchasable) return;
@@ -38,7 +43,7 @@ export default function ProductCard({ product, wishlisted = false }: Readonly<Pr
 
   const handleWishlist = (): void => {
     if (!isAuthenticated) {
-      navigate("/connexion", { state: { from: "/boutique" } });
+      void navigate("/connexion", { state: { from: "/boutique" } });
       return;
     }
     toggleWishlist.mutate({ productId: product.id, name: product.name });
@@ -46,7 +51,10 @@ export default function ProductCard({ product, wishlisted = false }: Readonly<Pr
 
   return (
     <article className="product-card card group relative flex flex-col overflow-hidden">
-      <Link to={"/boutique/" + product.slug} className="relative block aspect-[4/5] overflow-hidden bg-surface-container">
+      <Link
+        to={"/boutique/" + product.slug}
+        className="relative block aspect-[4/5] overflow-hidden bg-surface-container"
+      >
         {image ? (
           <img
             src={image}
@@ -102,7 +110,9 @@ export default function ProductCard({ product, wishlisted = false }: Readonly<Pr
         </h3>
 
         {product.seller && (
-          <p className="mt-1 text-label-sm text-on-surface-variant">par {product.seller.shopName}</p>
+          <p className="mt-1 text-label-sm text-on-surface-variant">
+            par {product.seller.shopName}
+          </p>
         )}
 
         <div className="mt-2 flex items-center gap-2">

@@ -10,8 +10,7 @@ import type {
 export const usersApi = {
   me: () => api.get<UserProfile>("/users/me"),
 
-  updateProfile: (input: UpdateProfileInput) =>
-    api.patch<UserProfile>("/users/me", input),
+  updateProfile: (input: UpdateProfileInput) => api.patch<UserProfile>("/users/me", input),
 
   changePassword: (input: ChangePasswordInput) =>
     api.post<{ message: string }>("/users/me/password", input),
@@ -25,6 +24,5 @@ export const usersApi = {
 
   deleteAddress: (id: string) => api.delete<void>("/users/me/addresses/" + id),
 
-  setDefaultAddress: (id: string) =>
-    api.post<Address>("/users/me/addresses/" + id + "/default"),
+  setDefaultAddress: (id: string) => api.post<Address>("/users/me/addresses/" + id + "/default"),
 };

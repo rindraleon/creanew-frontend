@@ -188,14 +188,25 @@ export default function ClientAddresses() {
             <Button variant="outline" onClick={() => setCreating(false)}>
               Annuler
             </Button>
-            <Button onClick={() => void onSubmit()} disabled={saveAddress.isPending || updateAddress.isPending}>
+            <Button
+              onClick={() => void onSubmit()}
+              disabled={saveAddress.isPending || updateAddress.isPending}
+            >
               {saveAddress.isPending || updateAddress.isPending ? "Enregistrement…" : "Enregistrer"}
             </Button>
           </>
         }
       >
-        <form onSubmit={(event) => void onSubmit(event)} className="grid gap-4 sm:grid-cols-2" noValidate>
-          <Field label="Libellé" error={form.formState.errors.label?.message} className="sm:col-span-2">
+        <form
+          onSubmit={(event) => void onSubmit(event)}
+          className="grid gap-4 sm:grid-cols-2"
+          noValidate
+        >
+          <Field
+            label="Libellé"
+            error={form.formState.errors.label?.message}
+            className="sm:col-span-2"
+          >
             <Input placeholder="Domicile, Bureau…" {...form.register("label")} />
           </Field>
           <Field label="Destinataire" required error={form.formState.errors.fullName?.message}>

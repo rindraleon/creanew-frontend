@@ -5,7 +5,7 @@ export const paymentProviders = ["mvola", "orange_money", "airtel_money"] as con
 
 export const paymentSchema = z.object({
   provider: z.enum(paymentProviders, {
-    errorMap: () => ({ message: "Choisissez un opérateur." }),
+    error: "Choisissez un opérateur.",
   }),
   transactionReference: z
     .string()

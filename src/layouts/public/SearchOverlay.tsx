@@ -14,9 +14,6 @@ interface SearchOverlayProps {
 /** Recherche plein écran : délégation au moteur de filtrage serveur (§45). */
 export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
   const [term, setTerm] = useState<string>("");
-  // Requête envoyée uniquement à partir de 2 caractères : en dessous, la requête
-  // est désactivée (`enabled: false`) au lieu de partir avec un `limit: 0`, que
-  // l'API rejetait en 422 et qui ne servait donc à rien.
   const searchTerm = term.trim();
   const { data, isFetching } = useProducts(
     { search: searchTerm, limit: 6 },
@@ -43,7 +40,10 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
 
   return (
     <div className="fixed inset-0 z-[95]" role="dialog" aria-modal="true" aria-label="Recherche">
-      <div className="absolute inset-0 bg-on-background/50 backdrop-blur-sm animate-fade-in" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-on-background/50 backdrop-blur-sm animate-fade-in"
+        onClick={onClose}
+      />
       <div className="relative mx-auto mt-0 w-full max-w-3xl animate-slide-down bg-surface-container-lowest shadow-card-hover sm:mt-16 sm:rounded-xl">
         <div className="flex items-center gap-3 border-b border-surface-container-highest px-5 py-4">
           <Search size={20} className="shrink-0 text-on-surface-variant" />
@@ -55,7 +55,11 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
             aria-label="Rechercher un produit"
             className="w-full bg-transparent text-body-lg text-on-background outline-none placeholder:text-on-surface-variant/60"
           />
-          <button onClick={onClose} aria-label="Fermer la recherche" className="rounded-lg p-1.5 hover:bg-surface-container">
+          <button
+            onClick={onClose}
+            aria-label="Fermer la recherche"
+            className="rounded-lg p-1.5 hover:bg-surface-container"
+          >
             <X size={20} />
           </button>
         </div>
@@ -86,7 +90,12 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                     >
                       <span className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-surface-container">
                         {image ? (
-                          <img src={image} alt={product.name} loading="lazy" className="h-full w-full object-cover" />
+                          <img
+                            src={image}
+                            alt={product.name}
+                            loading="lazy"
+                            className="h-full w-full object-cover"
+                          />
                         ) : null}
                       </span>
                       <span className="min-w-0 flex-1">

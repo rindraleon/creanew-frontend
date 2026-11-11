@@ -5,7 +5,6 @@ import CategorySection from "../components/CategorySection";
 import ProductSection from "../components/ProductSection";
 import PromoBanner from "../components/PromoBanner";
 import WhySection from "../components/WhySection";
-import Testimonials from "../components/Testimonials";
 import BlogTeaser from "../components/BlogTeaser";
 
 export default function Home() {
@@ -21,7 +20,7 @@ export default function Home() {
       <ProductSection
         eyebrow="Sélection"
         title="Notre collection signature"
-        subtitle="Des pièces emblématiques, conçues pour traverser toute une vie."
+        subtitle="Découvrez la sélection disponible."
         products={featured}
         viewAllLabel="Voir toute la boutique"
       />
@@ -29,11 +28,10 @@ export default function Home() {
       <ProductSection
         eyebrow="Fraîchement arrivés"
         title="Les nouveautés de la saison"
-        subtitle="Les dernières créations de nos ateliers, en stock limité."
+        subtitle="Découvrez les nouveautés disponibles."
         products={news}
       />
       <WhySection />
-      <Testimonials />
       <BlogTeaser />
     </>
   );

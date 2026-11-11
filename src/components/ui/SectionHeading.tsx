@@ -39,7 +39,9 @@ export default function SectionHeading({
           {title}
         </h2>
         {subtitle && (
-          <p className={`mt-3 text-body-lg ${light ? "text-primary-fixed-dim" : "text-on-surface-variant"}`}>
+          <p
+            className={`mt-3 text-body-lg ${light ? "text-primary-fixed-dim" : "text-on-surface-variant"}`}
+          >
             {subtitle}
           </p>
         )}

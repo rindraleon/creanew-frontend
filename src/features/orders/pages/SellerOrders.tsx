@@ -23,7 +23,11 @@ export default function SellerOrders() {
   const orders = data?.items ?? [];
   const renderOrders = () => {
     if (isLoading) {
-      return <div className="py-16"><PageLoader label="Chargement des commandes…" /></div>;
+      return (
+        <div className="py-16">
+          <PageLoader label="Chargement des commandes…" />
+        </div>
+      );
     }
 
     if (isError) {
@@ -63,7 +67,9 @@ export default function SellerOrders() {
                   {order.orderNumber}
                 </Link>
                 <OrderStatusBadge status={order.status} />
-                <span className="font-display text-lg text-primary">{formatPrice(order.total)}</span>
+                <span className="font-display text-lg text-primary">
+                  {formatPrice(order.total)}
+                </span>
               </div>
               <p className="mt-1 text-label-sm text-on-surface-variant">
                 {formatDate(order.createdAt)} · {order.shippingAddress.city},{" "}

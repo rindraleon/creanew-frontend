@@ -4,7 +4,11 @@ import { queryKeys } from "../../../shared/query/keys";
 import { useAuth } from "../context/AuthProvider";
 import { useToast } from "../../../shared/context/ToastContext";
 import { errorMessage } from "../../../shared/utils/errors";
-import type { AddressInput, ChangePasswordInput, UpdateProfileInput } from "../../../shared/types/api";
+import type {
+  AddressInput,
+  ChangePasswordInput,
+  UpdateProfileInput,
+} from "../../../shared/types/api";
 
 /** Profil de l'utilisateur connecté. */
 export function useCurrentUser() {
@@ -19,13 +23,15 @@ export function useCurrentUser() {
     initialData: user
       ? {
           id: user.id,
+          username: user.username,
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
           fullName: user.fullName,
           phone: user.phone,
           role: user.role,
-          avatarUrl: null,
+          avatarUrl: user.avatarUrl ?? null,
+          provider: user.provider ?? null,
           isActive: true,
           createdAt: new Date().toISOString(),
         }
@@ -35,17 +41,22 @@ export function useCurrentUser() {
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
-  const { setUser, user } = useAuth();
+  const { setUser, user, logout } = useAuth();
   const { toast } = useToast();
 
   return useMutation({
     mutationFn: (input: UpdateProfileInput) => usersApi.updateProfile(input),
-    onSuccess: (profile) => {
+    onSuccess: async (profile) => {
       queryClient.setQueryData(queryKeys.me, profile);
-      // Garde le jeton/portée vendeur intacts après changement d'e-mail.
+      if (user && profile.email !== user.email) {
+        await logout();
+        toast("Adresse modifiée. Reconnectez-vous avec votre nouvelle adresse.");
+        return;
+      }
       if (user) {
         setUser({
           ...user,
+          username: profile.username,
           firstName: profile.firstName,
           lastName: profile.lastName,
           fullName: profile.fullName,

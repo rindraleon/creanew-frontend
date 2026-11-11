@@ -6,7 +6,8 @@ export function productImageUrl(product: {
 }): string | null {
   if (product.images && product.images.length > 0) {
     const sorted = [...product.images].sort(
-      (a, b) => Number(b.isPrimary ?? false) - Number(a.isPrimary ?? false) ||
+      (a, b) =>
+        Number(b.isPrimary ?? false) - Number(a.isPrimary ?? false) ||
         (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
     );
     const primary = sorted.find((img) => img.url);
@@ -34,7 +35,5 @@ export function toNumber(value: number | string | null | undefined): number {
 
 /** Total indicatif du panier, calculé côté client pour l'affichage uniquement. */
 export function cartSubtotal(items: CartItem[]): number {
-  return items
-    .filter((item) => item.available)
-    .reduce((sum, item) => sum + item.lineTotal, 0);
+  return items.filter((item) => item.available).reduce((sum, item) => sum + item.lineTotal, 0);
 }

@@ -83,7 +83,12 @@ export default function AdminAnalytics() {
       ) : (
         <div className="space-y-6">
           <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard icon={TrendingUp} label="Revenus" value={formatPrice(total)} sub="sur la période" />
+            <StatCard
+              icon={TrendingUp}
+              label="Revenus"
+              value={formatPrice(total)}
+              sub="sur la période"
+            />
             <StatCard
               icon={BarChart3}
               label="Commandes"
@@ -91,14 +96,21 @@ export default function AdminAnalytics() {
               sub="sur la période"
             />
             {typeof data?.newCustomers === "number" && (
-              <StatCard icon={Users} label="Nouveaux clients" value={data.newCustomers} sub="sur la période" />
+              <StatCard
+                icon={Users}
+                label="Nouveaux clients"
+                value={data.newCustomers}
+                sub="sur la période"
+              />
             )}
             {data?.topProducts && (
               <StatCard
                 icon={Crown}
                 label="Produit n°1"
                 value={data.topProducts[0]?.name ?? "—"}
-                sub={data.topProducts[0] ? formatPrice(data.topProducts[0].revenue) : "aucune vente"}
+                sub={
+                  data.topProducts[0] ? formatPrice(data.topProducts[0].revenue) : "aucune vente"
+                }
               />
             )}
           </div>
@@ -197,7 +209,9 @@ export default function AdminAnalytics() {
                 {data.topCustomers.map((customer) => (
                   <li key={customer.id} className="flex items-center gap-3">
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-body-sm text-primary">{customer.name}</span>
+                      <span className="block truncate text-body-sm text-primary">
+                        {customer.name}
+                      </span>
                       <span className="block truncate text-label-sm text-on-surface-variant">
                         {customer.email}
                       </span>

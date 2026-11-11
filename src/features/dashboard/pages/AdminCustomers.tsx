@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Search, ShieldOff, UserCheck, Users } from "lucide-react";
-import { useAdminUsers, useChangeUserRole, useSuspendUser, useReactivateUser } from "../hooks/useAdmin";
+import {
+  useAdminUsers,
+  useChangeUserRole,
+  useSuspendUser,
+  useReactivateUser,
+} from "../hooks/useAdmin";
 import { formatDate } from "../../../shared/utils/format";
 import { errorMessage } from "../../../shared/utils/errors";
 import { useToast } from "../../../shared/context/ToastContext";
@@ -59,7 +64,10 @@ export default function AdminCustomers() {
         className="mt-5 flex flex-wrap gap-3"
       >
         <span className="relative min-w-[240px] flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+          />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -113,7 +121,9 @@ export default function AdminCustomers() {
                   <th className="px-4 py-3 text-right font-semibold">Actions</th>
                 </tr>
               </thead>
-              <tbody className={`divide-y divide-surface-container-high bg-surface-container-lowest ${isPlaceholderData ? "opacity-60" : ""}`}>
+              <tbody
+                className={`divide-y divide-surface-container-high bg-surface-container-lowest ${isPlaceholderData ? "opacity-60" : ""}`}
+              >
                 {users.map((user) => (
                   <tr key={user.id} className="transition-colors hover:bg-surface-container-low">
                     <td className="px-4 py-3">
@@ -136,7 +146,9 @@ export default function AdminCustomers() {
                         {!user.isActive && <Badge variant="danger">Suspendu</Badge>}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-on-surface-variant">{formatDate(user.createdAt)}</td>
+                    <td className="px-4 py-3 text-on-surface-variant">
+                      {formatDate(user.createdAt)}
+                    </td>
                     <td className="px-4 py-3">
                       <span className="flex items-center justify-end gap-2">
                         <Select

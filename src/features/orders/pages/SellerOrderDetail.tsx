@@ -80,7 +80,11 @@ export default function SellerOrderDetail() {
                 <li key={item.id} className="flex items-center gap-3 py-3">
                   <span className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-surface-container">
                     {item.imageUrl ? (
-                      <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        className="h-full w-full object-cover"
+                      />
                     ) : null}
                   </span>
                   <span className="min-w-0 flex-1">

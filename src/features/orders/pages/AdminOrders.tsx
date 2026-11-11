@@ -66,7 +66,9 @@ export default function AdminOrders() {
                     {order.orderNumber}
                   </Link>
                   <OrderStatusBadge status={order.status} />
-                  <span className="font-display text-lg text-primary">{formatPrice(order.total)}</span>
+                  <span className="font-display text-lg text-primary">
+                    {formatPrice(order.total)}
+                  </span>
                 </div>
 
                 <p className="mt-1 text-label-sm text-on-surface-variant">

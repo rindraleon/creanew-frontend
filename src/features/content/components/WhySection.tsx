@@ -10,21 +10,26 @@ interface Reason {
 }
 
 const reasons: Reason[] = [
-  { icon: Leaf, title: "Matériaux durables", text: "Bois certifié FSC et tissus naturels, sélectionnés pour durer." },
-  { icon: Hammer, title: "Fabrication soignée", text: "Des ateliers partenaires européens, attachés au détail." },
-  { icon: Ruler, title: "Design intemporel", text: "Des lignes épurées qui traversent les modes sans vieillir." },
-  { icon: HeartHandshake, title: "Service attentionné", text: "Une équipe à votre écoute, avant comme après l'achat." },
-];
-
-interface StatNumber {
-  value: string;
-  label: string;
-}
-
-const numbers: StatNumber[] = [
-  { value: "98 %", label: "de clients satisfaits" },
-  { value: "5 ans", label: "de garantie" },
-  { value: "100 %", label: "de bois certifié FSC" },
+  {
+    icon: Leaf,
+    title: "Confort absolu",
+    text: "Découvrez des modèles pour votre espace de vie.",
+  },
+  {
+    icon: Hammer,
+    title: "Design moderne",
+    text: "Lignes contemporaines qui subliment votre salon sans l'encombrer.",
+  },
+  {
+    icon: Ruler,
+    title: "Qualité durable",
+    text: "Consultez les détails de chaque modèle dans la boutique.",
+  },
+  {
+    icon: HeartHandshake,
+    title: "Service CreaNew",
+    text: "Notre équipe est à votre disposition pour vos questions.",
+  },
 ];
 
 export default function WhySection() {
@@ -32,10 +37,10 @@ export default function WhySection() {
     <section className="bg-surface-container-low">
       <div className="container-app section grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <Reveal className="relative order-2 lg:order-1">
-          <div className="h-full overflow-hidden rounded-xl shadow-card-hover">
+          <div className="h-full overflow-hidden rounded-xl shadow-card-hover ring-1 ring-outline-variant/20">
             <img
               src="/images/atelier.jpg"
-              alt="Artisan façonnant un meuble en chêne massif dans notre atelier"
+              alt="Illustration d’un atelier de mobilier"
               loading="lazy"
               className="aspect-[4/3] h-full w-full object-cover lg:aspect-auto lg:min-h-[560px]"
             />
@@ -45,8 +50,8 @@ export default function WhySection() {
         <div className="order-1 lg:order-2">
           <SectionHeading
             eyebrow="Nos engagements"
-            title="Pourquoi choisir MobilierShop ?"
-            subtitle="Nous conjuguons design, confort et durabilité pour créer des meubles que vous aimerez longtemps — très longtemps."
+            title="Pourquoi choisir CreaNew ?"
+            subtitle="Nous conjuguons confort, design et durabilité pour créer des canapés d'angle que vous aimerez longtemps — très longtemps."
           />
           <ul className="-mt-4 space-y-5">
             {reasons.map(({ icon: Icon, title, text }, i) => (
@@ -61,17 +66,6 @@ export default function WhySection() {
               </Reveal>
             ))}
           </ul>
-
-          <Reveal delay={0.3}>
-            <div className="mt-10 grid grid-cols-3 gap-4 rounded-lg border border-outline-variant/40 bg-surface-container-lowest p-6">
-              {numbers.map((n) => (
-                <div key={n.label} className="text-center">
-                  <p className="font-display text-2xl text-secondary md:text-3xl">{n.value}</p>
-                  <p className="mt-1 text-label-sm leading-snug text-on-surface-variant">{n.label}</p>
-                </div>
-              ))}
-            </div>
-          </Reveal>
         </div>
       </div>
     </section>

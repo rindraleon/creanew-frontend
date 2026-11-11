@@ -1,5 +1,3 @@
-
-
 /* ------------------------------------------------------------------ */
 /* Génériques                                                          */
 /* ------------------------------------------------------------------ */
@@ -32,12 +30,7 @@ export interface ApiErrorBody {
 
 export type UserRole = "customer" | "seller" | "admin";
 export type SellerStatus = "pending" | "approved" | "rejected" | "suspended";
-export type ProductStatus =
-  | "draft"
-  | "pending_review"
-  | "published"
-  | "out_of_stock"
-  | "archived";
+export type ProductStatus = "draft" | "pending_review" | "published" | "out_of_stock" | "archived";
 export type OrderStatus =
   | "pending_payment"
   | "payment_submitted"
@@ -49,20 +42,9 @@ export type OrderStatus =
   | "cancelled"
   | "rejected";
 export type MobileMoneyProvider = "mvola" | "orange_money" | "airtel_money";
-export type PaymentStatus =
-  | "pending"
-  | "submitted"
-  | "verified"
-  | "rejected"
-  | "refunded";
+export type PaymentStatus = "pending" | "submitted" | "verified" | "rejected" | "refunded";
 export type ShippingMethod = "standard" | "express" | "pickup";
-export type ProductSort =
-  | "newest"
-  | "price_asc"
-  | "price_desc"
-  | "name_asc"
-  | "popular"
-  | "rating";
+export type ProductSort = "newest" | "price_asc" | "price_desc" | "name_asc" | "popular" | "rating";
 export type NotificationType =
   | "ORDER_CREATED"
   | "ORDER_PAID"
@@ -82,13 +64,15 @@ export type NotificationType =
 
 export interface AuthUser {
   id: string;
+  username: string;
   email: string;
-  firstName: string;
+  firstName: string | null;
   lastName: string;
   fullName: string;
   phone: string | null;
+  avatarUrl: string | null;
+  provider: string | null;
   role: UserRole;
-  /** Statut vendeur, `null` si l'utilisateur n'est pas vendeur (§10). */
   sellerStatus: SellerStatus | null;
   sellerId: string | null;
 }
@@ -103,23 +87,26 @@ export interface AuthResponse {
 
 export interface UserProfile {
   id: string;
+  username: string;
   email: string;
-  firstName: string;
+  firstName: string | null;
   lastName: string;
   fullName: string;
   phone: string | null;
   role: UserRole;
   avatarUrl: string | null;
+  provider: string | null;
   isActive: boolean;
   createdAt: string;
 }
 
-/** Champs acceptés par `PATCH /users/me` — jamais de rôle (§62). */
 export interface UpdateProfileInput {
-  firstName?: string;
+  username?: string;
+  firstName?: string | null;
   lastName?: string;
   phone?: string;
   email?: string;
+  avatarUrl?: string | null;
 }
 
 export interface ChangePasswordInput {
@@ -553,13 +540,7 @@ export interface AdminDashboard {
 }
 
 export type AnalyticsRange =
-  | "today"
-  | "7d"
-  | "30d"
-  | "this_month"
-  | "last_month"
-  | "this_year"
-  | "custom";
+  "today" | "7d" | "30d" | "this_month" | "last_month" | "this_year" | "custom";
 
 export interface AdminAnalytics {
   range: AnalyticsRange;

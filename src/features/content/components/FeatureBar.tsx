@@ -9,10 +9,10 @@ interface Feature {
 }
 
 const features: Feature[] = [
-  { icon: Award, title: "Qualité premium", text: "Matériaux nobles et finitions soignées" },
-  { icon: Truck, title: "Livraison offerte", text: "Dès 1 500 000 Ar d'achat, partout à Madagascar" },
-  { icon: RotateCcw, title: "Retours faciles", text: "30 jours pour changer d'avis" },
-  { icon: ShieldCheck, title: "Paiement sécurisé", text: "Transactions 100 % protégées" },
+  { icon: Award, title: "Confort absolu", text: "Un intérieur qui vous ressemble" },
+  { icon: Truck, title: "Livraison", text: "Détails communiqués lors de la commande" },
+  { icon: RotateCcw, title: "Questions & retours", text: "Contactez notre équipe" },
+  { icon: ShieldCheck, title: "Paiement sécurisé", text: "Mobile Money & suivi transparent" },
 ];
 
 export default function FeatureBar() {

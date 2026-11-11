@@ -13,9 +13,17 @@ import {
   XCircle,
 } from "lucide-react";
 import { useOrder } from "../hooks/useOrders";
-import { useOrderPayment, usePaymentProviders, useSubmitPayment } from "../../payments/hooks/usePayments";
+import {
+  useOrderPayment,
+  usePaymentProviders,
+  useSubmitPayment,
+} from "../../payments/hooks/usePayments";
 import { useToast } from "../../../shared/context/ToastContext";
-import { paymentSchema, validateReference, normalizeReference } from "../../payments/schemas/payment";
+import {
+  paymentSchema,
+  validateReference,
+  normalizeReference,
+} from "../../payments/schemas/payment";
 import type { PaymentFormInput } from "../../payments/schemas/payment";
 import { ORDER_STATUS, PAYMENT_PROVIDERS } from "../../../shared/utils/constants";
 import type { PaymentProviderMeta } from "../../../shared/utils/constants";
@@ -51,9 +59,7 @@ export default function OrderSuccess() {
       .filter((m): m is PaymentProviderMeta => Boolean(m));
     return ordered.length
       ? ordered
-      : PAYMENT_PROVIDERS.filter((m) =>
-          serverProviders.some((p) => p.name === m.id),
-        );
+      : PAYMENT_PROVIDERS.filter((m) => serverProviders.some((p) => p.name === m.id));
   }, [serverProviders]);
 
   useEffect(() => {
@@ -87,9 +93,7 @@ export default function OrderSuccess() {
 
   const activePayment = order.payment ?? payment ?? null;
   const canSubmit =
-    !activePayment ||
-    activePayment.status === "pending" ||
-    activePayment.status === "rejected";
+    !activePayment || activePayment.status === "pending" || activePayment.status === "rejected";
   const providerMeta = PAYMENT_PROVIDERS.find((p) => p.id === provider);
 
   const onSubmit = form.handleSubmit(async (values) => {
@@ -168,7 +172,11 @@ export default function OrderSuccess() {
                 <li key={item.id} className="flex items-center gap-3 py-3">
                   <span className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-surface-container">
                     {item.imageUrl ? (
-                      <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        className="h-full w-full object-cover"
+                      />
                     ) : null}
                   </span>
                   <span className="min-w-0 flex-1">
@@ -256,7 +264,11 @@ export default function OrderSuccess() {
             )}
 
             {canSubmit && (
-              <form onSubmit={(event) => void onSubmit(event)} className="mt-5 space-y-4" noValidate>
+              <form
+                onSubmit={(event) => void onSubmit(event)}
+                className="mt-5 space-y-4"
+                noValidate
+              >
                 <div className="grid gap-3 sm:grid-cols-3">
                   {operatorCards.map((p) => (
                     <button
@@ -285,8 +297,9 @@ export default function OrderSuccess() {
 
                 <p className="rounded-lg bg-surface-container-low p-3 text-label-sm text-on-surface-variant">
                   <ShieldCheck size={13} className="mr-1 inline text-secondary" />
-                  Effectuez le virement de <strong>{formatPrice(order.total)}</strong> puis saisissez
-                  la référence reçue. Elle sera vérifiée manuellement par un administrateur.
+                  Effectuez le virement de <strong>{formatPrice(order.total)}</strong> puis
+                  saisissez la référence reçue. Elle sera vérifiée manuellement par un
+                  administrateur.
                 </p>
 
                 <Field
@@ -302,14 +315,16 @@ export default function OrderSuccess() {
                   />
                 </Field>
 
-                <Field
-                  label="Numéro ayant payé"
-                  error={form.formState.errors.payerPhone?.message}
-                >
+                <Field label="Numéro ayant payé" error={form.formState.errors.payerPhone?.message}>
                   <Input placeholder="+261 34 12 345 67" {...form.register("payerPhone")} />
                 </Field>
 
-                <Button type="submit" size="lg" className="w-full" disabled={submitPayment.isPending}>
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full"
+                  disabled={submitPayment.isPending}
+                >
                   {submitPayment.isPending ? "Envoi…" : "Envoyer la référence"}
                 </Button>
               </form>
@@ -359,7 +374,9 @@ export default function OrderSuccess() {
                     <div>
                       <OrderStatusBadge status={entry.newStatus} />
                       {entry.comment && (
-                        <p className="mt-1 text-label-sm text-on-surface-variant">{entry.comment}</p>
+                        <p className="mt-1 text-label-sm text-on-surface-variant">
+                          {entry.comment}
+                        </p>
                       )}
                       <p className="mt-0.5 text-label-sm text-on-surface-variant">
                         {formatDate(entry.createdAt)}

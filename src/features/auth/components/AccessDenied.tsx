@@ -35,12 +35,6 @@ export default function AccessDenied({ sellerStatus }: AccessDeniedProps) {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [refreshed, setRefreshed] = useState<boolean>(false);
 
-  /**
-   * Une demande vendeur validée pendant que l'utilisateur est connecté laisse
-   * son jeton d'accès sur l'ancien rôle (`customer`) : `/vendeur` renvoie 403
-   * alors que la base est à jour. Ce bouton relance la session côté serveur
-   * pour récupérer le rôle réel, au lieu de faire attendre 15 minutes.
-   */
   const onRefresh = async (): Promise<void> => {
     setRefreshing(true);
     try {
@@ -60,8 +54,7 @@ export default function AccessDenied({ sellerStatus }: AccessDeniedProps) {
         {message?.title ?? "Accès refusé"}
       </h1>
       <p className="mt-3 max-w-lg text-body-lg text-on-surface-variant">
-        {message?.text ??
-          "Vous n'avez pas les droits nécessaires pour consulter cette page."}
+        {message?.text ?? "Vous n'avez pas les droits nécessaires pour consulter cette page."}
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Button as={Link} to="/" variant="primary">
@@ -90,8 +83,8 @@ export default function AccessDenied({ sellerStatus }: AccessDeniedProps) {
       </div>
       {refreshed && (
         <p className="mt-4 max-w-lg text-body-sm text-on-surface-variant">
-          Session rechargée. Si votre demande vient d'être validée, rechargez
-          cette page pour accéder à votre espace vendeur.
+          Session rechargée. Si votre demande vient d'être validée, rechargez cette page pour
+          accéder à votre espace vendeur.
         </p>
       )}
     </div>

@@ -77,7 +77,9 @@ export default function ClientOrderDetail() {
                 <span
                   className={`h-1.5 rounded-full ${done ? "bg-secondary" : "bg-surface-container-high"}`}
                 />
-                <span className={`text-label-sm ${done ? "font-semibold text-primary" : "text-on-surface-variant"}`}>
+                <span
+                  className={`text-label-sm ${done ? "font-semibold text-primary" : "text-on-surface-variant"}`}
+                >
                   {label}
                 </span>
               </li>
@@ -97,7 +99,11 @@ export default function ClientOrderDetail() {
                 <li key={item.id} className="flex items-center gap-3 py-3">
                   <span className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-surface-container">
                     {item.imageUrl ? (
-                      <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        className="h-full w-full object-cover"
+                      />
                     ) : null}
                   </span>
                   <span className="min-w-0 flex-1">
@@ -151,7 +157,9 @@ export default function ClientOrderDetail() {
                     <div>
                       <OrderStatusBadge status={entry.newStatus} />
                       {entry.comment && (
-                        <p className="mt-1 text-label-sm text-on-surface-variant">{entry.comment}</p>
+                        <p className="mt-1 text-label-sm text-on-surface-variant">
+                          {entry.comment}
+                        </p>
                       )}
                       <p className="mt-0.5 text-label-sm text-on-surface-variant">
                         {formatDate(entry.createdAt)}

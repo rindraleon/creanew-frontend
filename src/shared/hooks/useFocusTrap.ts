@@ -10,14 +10,6 @@ const FOCUSABLE = [
   "[tabindex]:not([tabindex='-1'])",
 ].join(",");
 
-/**
- * Piège à focus + fermeture par Échap pour les dialogues (modales, tiroirs,
- * overlays). Sans lui, un utilisateur au clavier peut « sortir » de la modale
- * et se retrouver sur la page derrière — critère WCAG 2.1 (2.1.2 / 2.4.3).
- *
- * @param active  le dialogue est-il ouvert ?
- * @param onClose appelé lorsque l'utilisateur presse Échap
- */
 export function useFocusTrap(
   active: boolean,
   onClose?: () => void,

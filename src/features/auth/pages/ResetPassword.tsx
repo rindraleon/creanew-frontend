@@ -1,4 +1,5 @@
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authApi } from "../api/auth.api";
@@ -11,8 +12,16 @@ import Button from "../../../components/ui/Button";
 import { Field, Input } from "../../../components/ui/Form";
 
 export default function ResetPassword() {
-  const [params] = useSearchParams();
-  const token = params.get("token") ?? "";
+  const location = useLocation();
+  const [token] = useState(
+    () =>
+      new URLSearchParams(location.hash.slice(1)).get("token") ??
+      new URLSearchParams(location.search).get("token") ??
+      "",
+  );
+  useEffect(() => {
+    if (token) window.history.replaceState(window.history.state, "", location.pathname);
+  }, [token, location.pathname]);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -25,7 +34,7 @@ export default function ResetPassword() {
     try {
       await authApi.resetPassword(token, values.password);
       toast("Mot de passe réinitialisé. Vous pouvez vous connecter.");
-      navigate("/connexion");
+      void navigate("/connexion");
     } catch (error) {
       toast(errorMessage(error), "error");
     }
@@ -36,12 +45,17 @@ export default function ResetPassword() {
       <Breadcrumbs items={[{ label: "Accueil", to: "/" }, { label: "Réinitialisation" }]} />
       <div className="mx-auto mt-8 max-w-md">
         <div className="card p-6 sm:p-8">
-          <h1 className="font-display text-headline-md text-primary">Choisir un nouveau mot de passe</h1>
+          <h1 className="font-display text-headline-md text-primary">
+            Choisir un nouveau mot de passe
+          </h1>
 
           {!token ? (
             <p className="mt-4 text-body-md text-on-surface-variant">
               Lien invalide ou expiré.{" "}
-              <Link to="/mot-de-passe-oublie" className="text-secondary underline-offset-2 hover:underline">
+              <Link
+                to="/mot-de-passe-oublie"
+                className="text-secondary underline-offset-2 hover:underline"
+              >
                 Demandez un nouveau lien
               </Link>
               .
@@ -67,7 +81,12 @@ export default function ResetPassword() {
                   {...form.register("confirmPassword")}
                 />
               </Field>
-              <Button type="submit" className="w-full" size="lg" disabled={form.formState.isSubmitting}>
+              <Button
+                type="submit"
+                className="w-full"
+                size="lg"
+                disabled={form.formState.isSubmitting}
+              >
                 {form.formState.isSubmitting ? "Enregistrement…" : "Réinitialiser"}
               </Button>
             </form>

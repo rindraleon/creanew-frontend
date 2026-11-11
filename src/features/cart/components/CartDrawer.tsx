@@ -154,7 +154,9 @@ export default function CartDrawer() {
                             min={1}
                             max={Math.max(1, item.product.stock)}
                             small
-                            onChange={(qty) => updateItem.mutate({ itemId: item.id, quantity: qty })}
+                            onChange={(qty) =>
+                              updateItem.mutate({ itemId: item.id, quantity: qty })
+                            }
                           />
                           <span className="text-body-sm font-semibold text-primary">
                             {formatPrice(item.lineTotal)}
@@ -198,7 +200,7 @@ export default function CartDrawer() {
                 size="lg"
                 onClick={() => {
                   closeCart();
-                  navigate("/commande");
+                  void navigate("/commande");
                 }}
               >
                 Passer commande

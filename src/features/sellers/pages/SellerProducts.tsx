@@ -93,16 +93,25 @@ export default function SellerProducts() {
                   <th className="px-4 py-3 text-right font-semibold">Actions</th>
                 </tr>
               </thead>
-              <tbody className={`divide-y divide-surface-container-high bg-surface-container-lowest ${isPlaceholderData ? "opacity-60" : ""}`}>
+              <tbody
+                className={`divide-y divide-surface-container-high bg-surface-container-lowest ${isPlaceholderData ? "opacity-60" : ""}`}
+              >
                 {products.map((product) => {
                   const image = productImageUrl(product);
                   return (
-                    <tr key={product.id} className="transition-colors hover:bg-surface-container-low">
+                    <tr
+                      key={product.id}
+                      className="transition-colors hover:bg-surface-container-low"
+                    >
                       <td className="px-4 py-3">
                         <span className="flex items-center gap-3">
                           <span className="h-11 w-11 shrink-0 overflow-hidden rounded-md bg-surface-container">
                             {image ? (
-                              <img src={image} alt={product.name} className="h-full w-full object-cover" />
+                              <img
+                                src={image}
+                                alt={product.name}
+                                className="h-full w-full object-cover"
+                              />
                             ) : null}
                           </span>
                           <span className="min-w-0">
@@ -122,7 +131,11 @@ export default function SellerProducts() {
                         {formatPrice(product.price)}
                       </td>
                       <td className="px-4 py-3">
-                        <span className={product.stock <= product.lowStockThreshold ? "text-amber-700" : ""}>
+                        <span
+                          className={
+                            product.stock <= product.lowStockThreshold ? "text-amber-700" : ""
+                          }
+                        >
                           {product.stock}
                         </span>
                       </td>

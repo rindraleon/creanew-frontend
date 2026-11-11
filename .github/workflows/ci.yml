@@ -1,0 +1,96 @@
+name: Frontend CI
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-ci-${{ github.workflow }}-${{ github.ref }}
+  # Ne jamais interrompre une migration ou un déploiement en cours.
+  cancel-in-progress: false
+
+jobs:
+  quality:
+    name: Qualité et build frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Variable publique compilée dans le navigateur ; aucun secret ici.
+      VITE_API_URL: ${{ vars.VITE_API_URL || '/api' }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Installer les dépendances verrouillées
+        run: npm ci
+      - name: Vérifier l'URL publique de l'API
+        run: node .github/ci/check-api-url.mjs
+      - name: Vérifier le format
+        run: npm run format:check
+      - name: Lint
+        run: npm run lint
+      - name: Types
+        run: npm run typecheck
+      - name: Audit des dépendances (seuil élevé)
+        run: npm audit --audit-level=high
+      - name: Construire la version de production
+        run: npm run build
+      - name: Conserver l'artefact lié au commit
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: creanew-frontend-${{ github.sha }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
+  deploy:
+    name: Déploiement Render et smoke tests frontend
+    needs: quality
+    if: >-
+      ${{ github.event_name == 'push' && vars.RENDER_DEPLOY_ENABLED == 'true' &&
+          (github.ref == 'refs/heads/master' ||
+          (startsWith(github.ref, 'refs/tags/v') && vars.RENDER_RELEASE_DEPLOY_ENABLED == 'true')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment: production
+    concurrency:
+      group: frontend-render-production
+      cancel-in-progress: false
+    env:
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      RENDER_SERVICE_ID: ${{ vars.RENDER_SERVICE_ID }}
+      RENDER_SERVICE_KIND: frontend
+      GH_TOKEN: ${{ github.token }}
+      FRONTEND_URL: ${{ vars.FRONTEND_URL }}
+      VITE_API_URL: ${{ vars.VITE_API_URL || '/api' }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Bloquer le déploiement sans suite de tests
+        run: |
+          echo "::error::Le déploiement est bloqué : une suite de tests doit être rétablie et exécutée dans la CI avant la production."
+          exit 1
+      - name: Identifier le commit réellement vérifié
+        id: commit
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Vérifier Render et déployer le commit exact
+        env:
+          RENDER_COMMIT_SHA: ${{ steps.commit.outputs.sha }}
+        run: node .github/deploy/render-deploy.mjs
+      - name: Smoke tests HTTPS non destructifs
+        run: node .github/deploy/smoke-deployment.mjs

@@ -21,9 +21,7 @@ export function useToggleWishlist() {
 
   return useMutation({
     mutationFn: ({ productId, name }: { productId: string; name?: string }) =>
-      wishlistApi
-        .toggle(productId)
-        .then((wishlist) => ({ wishlist, name, productId })),
+      wishlistApi.toggle(productId).then((wishlist) => ({ wishlist, name, productId })),
     onSuccess: ({ wishlist, name, productId }) => {
       queryClient.setQueryData(queryKeys.wishlist.all, wishlist);
       // Le serveur renvoie la liste à jour : sa présence indique l'état final.

@@ -16,7 +16,15 @@ interface FieldProps extends LabelHTMLAttributes<HTMLLabelElement> {
   children: ReactNode;
 }
 
-export function Field({ label, error, hint, required, children, className = "", ...props }: FieldProps) {
+export function Field({
+  label,
+  error,
+  hint,
+  required,
+  children,
+  className = "",
+  ...props
+}: FieldProps) {
   return (
     <label className={`block ${className}`} {...props}>
       {label && (
@@ -25,7 +33,9 @@ export function Field({ label, error, hint, required, children, className = "", 
         </span>
       )}
       {children}
-      {hint && !error && <span className="mt-1 block text-label-sm text-on-surface-variant/80">{hint}</span>}
+      {hint && !error && (
+        <span className="mt-1 block text-label-sm text-on-surface-variant/80">{hint}</span>
+      )}
       {error && <span className="mt-1 block text-label-sm text-red-600">{error}</span>}
     </label>
   );
@@ -34,14 +44,17 @@ export function Field({ label, error, hint, required, children, className = "", 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   function Input({ className = "", ...props }, ref) {
     return <input ref={ref} className={`input-field ${className}`} {...props} />;
-  }
+  },
 );
 
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(
-  function Textarea({ className = "", rows = 5, ...props }, ref) {
-    return <textarea ref={ref} rows={rows} className={`input-field resize-none ${className}`} {...props} />;
-  }
-);
+export const Textarea = forwardRef<
+  HTMLTextAreaElement,
+  TextareaHTMLAttributes<HTMLTextAreaElement>
+>(function Textarea({ className = "", rows = 5, ...props }, ref) {
+  return (
+    <textarea ref={ref} rows={rows} className={`input-field resize-none ${className}`} {...props} />
+  );
+});
 
 export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(
   function Select({ className = "", children, ...props }, ref) {
@@ -56,7 +69,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSel
         />
       </span>
     );
-  }
+  },
 );
 
 interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {

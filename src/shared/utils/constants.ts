@@ -1,5 +1,3 @@
-
-
 import type {
   MobileMoneyProvider,
   OrderStatus,
@@ -28,13 +26,13 @@ export const SHIPPING_METHODS: ShippingMethod[] = [
   {
     id: "standard",
     label: "Livraison standard",
-    delay: "3 à 5 jours ouvrés",
+    delay: "Délai à confirmer",
     price: 10_000,
   },
   {
     id: "express",
     label: "Livraison express",
-    delay: "24 à 48 h",
+    delay: "Délai à confirmer",
     price: 25_000,
   },
   {
@@ -174,14 +172,6 @@ export const ORDER_STATUS: Record<OrderStatus, OrderStatusMeta> = {
   },
 };
 
-/** Transitions de statut gérables depuis l'écran admin « Commandes ».
- *  Miroir de la matrice serveur (§64), réduit aux statuts qu'un administrateur
- *  peut réellement appliquer via `PATCH /orders/:id/status` :
- *  - « paid » est exclu (verrou anti-fraude : il ne s'obtient que par la
- *    vérification de la référence Mobile Money dans Paiements) ;
- *  - le cycle de paiement (payment_submitted / rejected / pending_payment)
- *    est exclu car il doit rester cohérent avec l'enregistrement Payment.
- */
 export const ADMIN_ORDER_TRANSITIONS: Partial<Record<OrderStatus, OrderStatus[]>> = {
   pending_payment: ["cancelled"],
   payment_submitted: ["cancelled"],
@@ -203,14 +193,21 @@ export const ORDER_STEPS: string[] = [
 ];
 
 export const PAYMENT_STATUS: Record<PaymentStatus, { label: string; badge: string }> = {
-  pending: { label: "En attente", badge: "bg-surface-container text-on-surface-variant border-outline-variant" },
+  pending: {
+    label: "En attente",
+    badge: "bg-surface-container text-on-surface-variant border-outline-variant",
+  },
   submitted: { label: "À vérifier", badge: "bg-sky-100 text-sky-800 border-sky-200" },
   verified: { label: "Vérifié", badge: "bg-emerald-100 text-emerald-800 border-emerald-200" },
   rejected: { label: "Rejeté", badge: "bg-red-100 text-red-700 border-red-200" },
   refunded: { label: "Remboursé", badge: "bg-violet-100 text-violet-800 border-violet-200" },
 };
 
-export interface StatusMeta { label: string; badge: string; description: string }
+export interface StatusMeta {
+  label: string;
+  badge: string;
+  description: string;
+}
 
 export const PRODUCT_STATUS: Record<ProductStatus, StatusMeta> = {
   draft: {
@@ -244,7 +241,8 @@ export const SELLER_STATUS: Record<SellerStatus, StatusMeta> = {
   pending: {
     label: "En attente",
     badge: "bg-amber-100 text-amber-800 border-amber-200",
-    description: "Votre demande est en cours d'examen par un administrateur. Aucune vente possible pour l'instant.",
+    description:
+      "Votre demande est en cours d'examen par un administrateur. Aucune vente possible pour l'instant.",
   },
   approved: {
     label: "Approuvé",

@@ -1,10 +1,29 @@
-@import './styles/fonts.css';
+@import "./styles/fonts.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --foreground: 0 0% 10.2%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10.2%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10.2%;
+    --primary-foreground: 0 0% 100%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 42.22 52.94% 90%;
+    --muted-foreground: 27.27 5.42% 39.8%;
+    --accent: 43.4 100% 90.78%;
+    --accent-foreground: 41.87 64.86% 29.02%;
+    --destructive: 3.22 71.29% 40.98%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 42 28.3% 79.22%;
+    --input: 42 28.3% 79.22%;
+    --ring: 41.47 53.54% 50.2%;
+    --radius: 0.5rem;
+  }
   html {
     scroll-behavior: smooth;
   }

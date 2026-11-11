@@ -27,8 +27,7 @@ export function useCreateOrder() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: (input: CreateOrderInput) =>
-      ordersApi.create(input, crypto.randomUUID()),
+    mutationFn: (input: CreateOrderInput) => ordersApi.create(input, crypto.randomUUID()),
     onSuccess: (order) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.cart.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.orders.all });
@@ -43,8 +42,7 @@ export function useCancelOrder() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
-      ordersApi.cancel(id, reason),
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) => ordersApi.cancel(id, reason),
     onSuccess: () => {
       // `orders.all` est un préfixe de `orders.detail(id)` : l'invalidation
       // recharge donc aussi la page de suivi, avec `payment` et `statusHistory`.
@@ -61,15 +59,8 @@ export function useUpdateOrderStatus() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: ({
-      id,
-      status,
-      comment,
-    }: {
-      id: string;
-      status: OrderStatus;
-      comment?: string;
-    }) => ordersApi.updateStatus(id, status, comment),
+    mutationFn: ({ id, status, comment }: { id: string; status: OrderStatus; comment?: string }) =>
+      ordersApi.updateStatus(id, status, comment),
     onSuccess: (order) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.orders.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.seller.all });

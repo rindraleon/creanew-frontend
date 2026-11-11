@@ -83,7 +83,12 @@ export default function CartPage() {
                       className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-surface-container"
                     >
                       {image ? (
-                        <img src={image} alt={item.product.name} loading="lazy" className="h-full w-full object-cover" />
+                        <img
+                          src={image}
+                          alt={item.product.name}
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
                       ) : null}
                     </Link>
 

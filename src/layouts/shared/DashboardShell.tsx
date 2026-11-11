@@ -97,7 +97,7 @@ function UserMenu({
             dark ? "text-white" : "text-on-surface"
           }`}
         >
-          {user.firstName || user.fullName}
+          {user.username ?? user.firstName ?? user.fullName}
         </span>
         <ChevronDown
           size={16}

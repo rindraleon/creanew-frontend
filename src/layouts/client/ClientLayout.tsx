@@ -1,5 +1,14 @@
 import { Outlet } from "react-router-dom";
-import { Bell, Heart, LayoutDashboard, MapPin, Package, Store, User, Warehouse } from "lucide-react";
+import {
+  Bell,
+  Heart,
+  LayoutDashboard,
+  MapPin,
+  Package,
+  Store,
+  User,
+  Warehouse,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import DashboardShell, { type ShellNavItem } from "../shared/DashboardShell";
@@ -45,7 +54,7 @@ export default function ClientLayout() {
     <DashboardShell
       variant="light"
       title="Espace client"
-      brandInitial={user.firstName?.charAt(0)?.toUpperCase() ?? "C"}
+      brandInitial={user.username?.charAt(0)?.toUpperCase() ?? "C"}
       brandName={user.fullName}
       brandTagline={user.email}
       items={items}

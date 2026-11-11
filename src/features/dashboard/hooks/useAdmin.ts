@@ -1,9 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  adminApi,
-  type AdminAnalyticsType,
-  type AdminUsersQuery,
-} from "../api/admin.api";
+import { adminApi, type AdminAnalyticsType, type AdminUsersQuery } from "../api/admin.api";
 import { categoriesApi, type CreateCategoryInput } from "../../categories/api/categories.api";
 import { queryKeys } from "../../../shared/query/keys";
 import { useAuth } from "../../auth/context/AuthProvider";
@@ -60,8 +56,7 @@ export function useChangeUserRole() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: ({ id, role }: { id: string; role: UserRole }) =>
-      adminApi.changeRole(id, role),
+    mutationFn: ({ id, role }: { id: string; role: UserRole }) => adminApi.changeRole(id, role),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.users({}) });
       toast("Rôle modifié.");
@@ -252,15 +247,8 @@ export function useAdminUpdateOrderStatus() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: ({
-      id,
-      status,
-      comment,
-    }: {
-      id: string;
-      status: OrderStatus;
-      comment?: string;
-    }) => adminApi.updateOrderStatus(id, status, comment),
+    mutationFn: ({ id, status, comment }: { id: string; status: OrderStatus; comment?: string }) =>
+      adminApi.updateOrderStatus(id, status, comment),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.orders.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.orders({}) });

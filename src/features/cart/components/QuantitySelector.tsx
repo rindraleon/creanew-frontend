@@ -28,7 +28,9 @@ export default function QuantitySelector({
       >
         <Minus size={small ? 14 : 16} />
       </button>
-      <span className={`min-w-[2.25rem] text-center font-semibold ${small ? "text-body-sm" : ""}`}>{value}</span>
+      <span className={`min-w-[2.25rem] text-center font-semibold ${small ? "text-body-sm" : ""}`}>
+        {value}
+      </span>
       <button
         type="button"
         onClick={() => onChange(Math.min(max, value + 1))}

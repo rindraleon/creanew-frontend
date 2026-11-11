@@ -21,14 +21,6 @@ export function useCategory(slug: string | undefined) {
   });
 }
 
-/**
- * Catalogue public : recherche, filtres, tri, pagination (§44, §45).
- *
- * `options.enabled` laisse l'appelant désactiver la requête — typiquement une
- * barre de recherche qui n'interroge le serveur qu'à partir de 2 caractères.
- * Sans ce garde, chaque frappe partait en requête (et `limit: 0` valait un 422
- * côté API, `limit` étant validé `@Min(1)`).
- */
 export function useProducts(query: ProductQuery = {}, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: queryKeys.products.list(query),

@@ -42,7 +42,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       setToasts((t) => [...t, { id, message, type }]);
       setTimeout(() => remove(id), 3500);
     },
-    [remove]
+    [remove],
   );
 
   return (
@@ -57,7 +57,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               className="pointer-events-auto flex items-start gap-3 rounded-lg border border-outline-variant/50 bg-white p-3.5 shadow-card-hover animate-toast-in"
               role="status"
             >
-              <Icon size={20} className={`mt-0.5 shrink-0 ${iconStyles[t.type] ?? iconStyles.info}`} />
+              <Icon
+                size={20}
+                className={`mt-0.5 shrink-0 ${iconStyles[t.type] ?? iconStyles.info}`}
+              />
               <p className="text-body-sm text-on-background">{t.message}</p>
               <button
                 onClick={() => remove(t.id)}

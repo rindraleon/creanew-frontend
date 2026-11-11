@@ -35,7 +35,7 @@ export default function ClientDashboard() {
   return (
     <div>
       <h2 className="font-display text-headline-md text-primary">
-        Bonjour {user?.firstName ?? ""} 👋
+        Bonjour {user?.username ?? user?.firstName ?? ""} 👋
       </h2>
       <p className="mt-1 text-body-md text-on-surface-variant">
         Retrouvez vos commandes, vos adresses et vos favoris.
@@ -84,7 +84,9 @@ export default function ClientDashboard() {
                     </span>
                   </span>
                   <OrderStatusBadge status={order.status} />
-                  <span className="font-display text-lg text-primary">{formatPrice(order.total)}</span>
+                  <span className="font-display text-lg text-primary">
+                    {formatPrice(order.total)}
+                  </span>
                 </Link>
               </li>
             ))}

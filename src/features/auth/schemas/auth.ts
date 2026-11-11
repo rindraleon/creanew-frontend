@@ -1,22 +1,62 @@
 import { z } from "zod";
+import {
+  isDisposableEmail,
+  normalizeEmail,
+  DISPOSABLE_EMAIL_MESSAGE,
+} from "../../../shared/validators/email";
 
-/** Mêmes contraintes que `RegisterDto` (min 8, au moins une lettre et un chiffre). */
 export const passwordSchema = z
   .string()
   .min(8, "Le mot de passe doit contenir au moins 8 caractères.")
+  .max(128, "Le mot de passe ne peut pas dépasser 128 caractères.")
   .regex(/[A-Za-z]/, "Le mot de passe doit contenir au moins une lettre.")
   .regex(/\d/, "Le mot de passe doit contenir au moins un chiffre.");
 
-export const loginSchema = z.object({
-  email: z.string().min(1, "L'adresse e-mail est requise.").email("Adresse e-mail invalide."),
-  password: z.string().min(1, "Le mot de passe est requis."),
-});
+export const usernameSchema = z
+  .string()
+  .trim()
+  .min(3, "Au moins 3 caractères.")
+  .max(30, "30 caractères max.")
+  .regex(/^[a-zA-Z0-9._-]+$/, "Lettres, chiffres, . _ - uniquement.");
+
+// Helper zod pour email non jetable
+export const emailSchema = z
+  .string()
+  .transform(normalizeEmail)
+  .pipe(
+    z
+      .string()
+      .max(190, "Adresse e-mail trop longue.")
+      .min(1, "L'adresse e-mail est requise.")
+      .email("Adresse e-mail invalide.")
+      .superRefine((val, ctx) => {
+        if (isDisposableEmail(val))
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: DISPOSABLE_EMAIL_MESSAGE });
+      }),
+  );
+
+export const loginSchema = z
+  .object({
+    identifier: z.string().trim().min(1, "Email ou nom d’utilisateur requis."),
+    password: z.string().min(1, "Le mot de passe est requis."),
+  })
+  .superRefine((data, ctx) => {
+    // Si identifier ressemble à un email, vérifier disposable sans révéler existence
+    if (data.identifier.includes("@") && isDisposableEmail(data.identifier)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: DISPOSABLE_EMAIL_MESSAGE,
+        path: ["identifier"],
+      });
+    }
+  });
 
 export const registerSchema = z
   .object({
-    firstName: z.string().trim().min(1, "Le prénom est requis.").max(120),
+    username: usernameSchema,
+    firstName: z.string().trim().max(120).optional().or(z.literal("")),
     lastName: z.string().trim().min(1, "Le nom est requis.").max(120),
-    email: z.string().min(1, "L'adresse e-mail est requise.").email("Adresse e-mail invalide."),
+    email: emailSchema,
     phone: z
       .string()
       .trim()
@@ -25,8 +65,6 @@ export const registerSchema = z
       .or(z.literal("")),
     password: passwordSchema,
     confirmPassword: z.string().min(1, "Confirmez votre mot de passe."),
-    /** Créer une demande vendeur en même temps que le compte (§14). */
-    asSeller: z.boolean().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Les mots de passe ne correspondent pas.",
@@ -34,7 +72,7 @@ export const registerSchema = z
   });
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().min(1, "L'adresse e-mail est requise.").email("Adresse e-mail invalide."),
+  email: emailSchema,
 });
 
 export const resetPasswordSchema = z
@@ -50,7 +88,6 @@ export const resetPasswordSchema = z
 export const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, "Saisissez votre mot de passe actuel."),
-    // `ChangePasswordDto` exige 10 caractères minimum côté serveur.
     newPassword: z
       .string()
       .min(10, "Le nouveau mot de passe doit contenir au moins 10 caractères.")
@@ -64,9 +101,10 @@ export const changePasswordSchema = z
   });
 
 export const profileSchema = z.object({
-  firstName: z.string().trim().min(1, "Le prénom est requis.").max(120),
+  username: usernameSchema,
+  firstName: z.string().trim().max(120).optional().or(z.literal("")),
   lastName: z.string().trim().min(1, "Le nom est requis.").max(120),
-  email: z.string().min(1, "L'adresse e-mail est requise.").email("Adresse e-mail invalide."),
+  email: emailSchema,
   phone: z
     .string()
     .trim()

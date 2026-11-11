@@ -30,8 +30,8 @@ export default function AdminAuditLogs() {
     <div>
       <h2 className="font-display text-headline-md text-primary">Journal d'audit</h2>
       <p className="mt-1 text-body-md text-on-surface-variant">
-        Traçabilité des actions sensibles : qui a fait quoi, quand et depuis quelle adresse IP
-        (§32, §72).
+        Traçabilité des actions sensibles : qui a fait quoi, quand et depuis quelle adresse IP (§32,
+        §72).
       </p>
 
       <div className="mt-5 flex flex-wrap gap-3">

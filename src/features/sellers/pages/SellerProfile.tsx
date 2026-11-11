@@ -90,7 +90,11 @@ export default function SellerProfile() {
         </p>
       )}
 
-      <form onSubmit={(event) => void onSubmit(event)} className="card mt-6 space-y-4 p-5 sm:p-6" noValidate>
+      <form
+        onSubmit={(event) => void onSubmit(event)}
+        className="card mt-6 space-y-4 p-5 sm:p-6"
+        noValidate
+      >
         <h2 className="font-display text-headline-sm text-primary">Informations</h2>
 
         <Field label="Nom de la boutique" required error={form.formState.errors.shopName?.message}>

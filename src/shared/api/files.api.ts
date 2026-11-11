@@ -2,11 +2,7 @@ import { api, buildQuery } from "./client";
 import type { UploadedFile } from "../types/api";
 
 /** Buckets MinIO autorisés. Le client ne choisit jamais le chemin (§19). */
-export type UploadBucket =
-  | "products"
-  | "avatars"
-  | "seller-documents"
-  | "payment-proofs";
+export type UploadBucket = "products" | "avatars" | "seller-documents" | "payment-proofs";
 
 export interface UploadRulesResponse {
   products: { accept: string; maxSizeMb: number };
@@ -18,7 +14,6 @@ export interface UploadRulesResponse {
 export const filesApi = {
   rules: () => api.get<UploadRulesResponse>("/files/rules"),
 
-  
   upload: (bucket: UploadBucket, file: File) => {
     const form = new FormData();
     form.append("bucket", bucket);

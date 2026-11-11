@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
-export type BadgeVariant = "neutral" | "secondary" | "success" | "danger" | "warning" | "info" | "outline";
+export type BadgeVariant =
+  "neutral" | "secondary" | "success" | "danger" | "warning" | "info" | "outline";
 
 const variants: Record<BadgeVariant, string> = {
   neutral: "bg-surface-container-high text-on-surface-variant border-outline-variant",

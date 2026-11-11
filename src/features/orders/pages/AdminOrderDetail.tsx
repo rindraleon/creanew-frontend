@@ -75,7 +75,11 @@ export default function AdminOrderDetail() {
                 <li key={item.id} className="flex items-center gap-3 py-3">
                   <span className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-surface-container">
                     {item.imageUrl ? (
-                      <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        className="h-full w-full object-cover"
+                      />
                     ) : null}
                   </span>
                   <span className="min-w-0 flex-1">
@@ -120,7 +124,9 @@ export default function AdminOrderDetail() {
                     <div>
                       <OrderStatusBadge status={entry.newStatus} />
                       {entry.comment && (
-                        <p className="mt-1 text-label-sm text-on-surface-variant">{entry.comment}</p>
+                        <p className="mt-1 text-label-sm text-on-surface-variant">
+                          {entry.comment}
+                        </p>
                       )}
                       <p className="mt-0.5 text-label-sm text-on-surface-variant">
                         {formatDate(entry.createdAt)}

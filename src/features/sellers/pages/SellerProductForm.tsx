@@ -8,7 +8,7 @@ import { useCreateProduct, useUpdateProduct, useSellerProducts } from "../hooks/
 import { useCategories } from "../../products/hooks/useCatalog";
 import { filesApi } from "../../../shared/api/files.api";
 import { productSchema } from "../../products/schemas/product";
-import type { ProductFormInput } from "../../products/schemas/product";
+import type { ProductFormInput, ProductFormOutput } from "../../products/schemas/product";
 import { PRODUCT_STATUS } from "../../../shared/utils/constants";
 import { errorMessage } from "../../../shared/utils/errors";
 import { useToast } from "../../../shared/context/ToastContext";
@@ -49,7 +49,7 @@ export default function SellerProductForm() {
   const existing = id ? list?.items.find((p) => p.id === id) : undefined;
   const [images, setImages] = useState<ProductImageInput[]>([]);
 
-  const form = useForm<ProductFormInput>({
+  const form = useForm<ProductFormInput, unknown, ProductFormOutput>({
     resolver: zodResolver(productSchema),
     defaultValues: emptyValues,
     values: existing
@@ -135,7 +135,7 @@ export default function SellerProductForm() {
       } else {
         await createProduct.mutateAsync(payload);
         toast("Produit créé.");
-        navigate("/vendeur/produits");
+        void navigate("/vendeur/produits");
         return;
       }
     } catch (error) {
@@ -158,7 +158,11 @@ export default function SellerProductForm() {
         {isEdit ? "Modifier le produit" : "Nouveau produit"}
       </h2>
 
-      <form onSubmit={(event) => void onSubmit(event)} className="mt-6 grid gap-6 lg:grid-cols-3" noValidate>
+      <form
+        onSubmit={(event) => void onSubmit(event)}
+        className="mt-6 grid gap-6 lg:grid-cols-3"
+        noValidate
+      >
         <div className="space-y-6 lg:col-span-2">
           <section className="card p-5 sm:p-6">
             <h2 className="font-display text-headline-sm text-primary">Informations</h2>
@@ -275,7 +279,11 @@ export default function SellerProductForm() {
                 <li key={image.objectKey ?? index} className="relative">
                   <span className="block aspect-square overflow-hidden rounded-md bg-surface-container">
                     {image.url ? (
-                      <img src={image.url} alt={image.alt ?? ""} className="h-full w-full object-cover" />
+                      <img
+                        src={image.url}
+                        alt={image.alt ?? ""}
+                        className="h-full w-full object-cover"
+                      />
                     ) : null}
                   </span>
                   {isPrimaryBadge(image)}
@@ -314,7 +322,7 @@ export default function SellerProductForm() {
               type="button"
               variant="outline"
               className="w-full"
-              onClick={() => navigate("/vendeur/produits")}
+              onClick={() => void navigate("/vendeur/produits")}
             >
               Annuler
             </Button>

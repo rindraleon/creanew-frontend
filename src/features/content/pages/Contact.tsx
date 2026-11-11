@@ -1,49 +1,20 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { ChevronDown, Clock, Mail, MapPin, Phone, Send } from "lucide-react";
+import { Clock, Mail, MapPin, Phone, Send, Loader2, MessageCircle } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useToast } from "../../../shared/context/ToastContext";
+import { useAuth } from "../../auth/context/AuthProvider";
+import { contactApi } from "../../contact/api/contact.api";
+import { siteContentApi } from "../../../shared/api/siteContent.api";
+import { useQuery } from "@tanstack/react-query";
 import Breadcrumbs from "../../../components/ui/Breadcrumbs";
 import Button from "../../../components/ui/Button";
 import { Field, Input, Select, Textarea } from "../../../components/ui/Form";
 import Reveal from "../../../components/ui/Reveal";
-
-interface ContactInfo {
-  icon: LucideIcon;
-  title: string;
-  lines: string[];
-}
-
-const contactInfo: ContactInfo[] = [
-  { icon: MapPin, title: "Showroom", lines: ["Ankorondrano, 101", "Antananarivo, Madagascar"] },
-  { icon: Phone, title: "Téléphone", lines: ["+261 34 05 123 45", "Du lundi au samedi"] },
-  { icon: Mail, title: "Email", lines: ["bonjour@mobilier-shop.mg", "Réponse sous 24 h"] },
-  { icon: Clock, title: "Horaires", lines: ["Lun – Sam : 10 h – 19 h", "Dim : sur rendez-vous"] },
-];
-
-interface Faq {
-  q: string;
-  a: string;
-}
-
-const faqs: Faq[] = [
-  {
-    q: "Quels sont les délais de livraison ?",
-    a: "La livraison standard prend 3 à 5 jours ouvrés, l'express 24 à 48 h. Les produits en stock sont expédiés le jour même pour toute commande passée avant 14 h.",
-  },
-  {
-    q: "Comment fonctionnent les retours ?",
-    a: "Vous disposez de 30 jours après réception pour changer d'avis. Le retour est gratuit : imprimez l'étiquette prépayée depuis votre espace client et déposez le colis en point relais.",
-  },
-  {
-    q: "Proposez-vous un service de montage ?",
-    a: "Oui, dans tout Antananarivo, pour 79 000 Ar par commande. Nos livreurs montent vos meubles, débarrassent les emballages et repartent avec.",
-  },
-  {
-    q: "La garantie couvre-t-elle tout ?",
-    a: "Nos meubles sont garantis 5 ans contre les défauts de fabrication et de matériaux. L'usure normale et les dégâts d'humidité ne sont pas couverts.",
-  },
-];
+import { errorMessage } from "../../../shared/utils/errors";
+import { emailSchema } from "../../auth/schemas/auth";
+import { ApiError } from "../../../shared/api/client";
+import { Link } from "react-router-dom";
 
 interface ContactForm {
   name: string;
@@ -54,25 +25,69 @@ interface ContactForm {
 
 export default function Contact() {
   const { toast } = useToast();
-  const [form, setForm] = useState<ContactForm>({ name: "", email: "", subject: "Question produit", message: "" });
+  const { user } = useAuth();
+  const [form, setForm] = useState<ContactForm>({
+    name: user?.fullName ?? "",
+    email: user?.email ?? "",
+    subject: "Question produit",
+    message: "",
+  });
   const [errors, setErrors] = useState<Partial<Record<keyof ContactForm, string>>>({});
-  const [openFaq, setOpenFaq] = useState<number>(0);
+  const [sending, setSending] = useState(false);
+
+  // Contact info administrable
+  const { data: contactSetting } = useQuery({
+    queryKey: ["site-content", "contact_info"],
+    queryFn: () => siteContentApi.byKey("contact_info"),
+  });
+  const contactVal = contactSetting?.value ?? {};
+  const stringList = (value: unknown, fallback: string[]): string[] =>
+    typeof value === "string"
+      ? [value]
+      : Array.isArray(value) && value.every((item: unknown) => typeof item === "string")
+        ? value
+        : fallback;
+  const infoShowroom = stringList(contactVal.showroom, []);
+  const infoPhone = stringList(contactVal.phone, []);
+  const infoEmail = stringList(contactVal.email, []);
+  const infoHours = stringList(contactVal.hours, []);
+
+  const contactInfo: { icon: LucideIcon; title: string; lines: string[] }[] = [
+    { icon: MapPin, title: "Showroom", lines: infoShowroom },
+    { icon: Phone, title: "Téléphone", lines: infoPhone },
+    { icon: Mail, title: "Email", lines: infoEmail },
+    { icon: Clock, title: "Horaires", lines: infoHours },
+  ];
 
   const set =
     (key: keyof ContactForm) =>
     (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
       setForm((f) => ({ ...f, [key]: e.target.value }));
 
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const errs: Partial<Record<keyof ContactForm, string>> = {};
     if (!form.name.trim()) errs.name = "Votre nom est requis.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = "Adresse email invalide.";
-    if (form.message.trim().length < 10) errs.message = "Votre message doit contenir au moins 10 caractères.";
+    const emailResult = emailSchema.safeParse(form.email);
+    if (!emailResult.success)
+      errs.email = emailResult.error.issues[0]?.message ?? "Adresse e-mail invalide.";
+    if (form.message.trim().length < 10)
+      errs.message = "Votre message doit contenir au moins 10 caractères.";
     setErrors(errs);
     if (Object.keys(errs).length) return;
-    setForm({ name: "", email: "", subject: "Question produit", message: "" });
-    toast("Merci ! Votre message a bien été envoyé. Nous revenons vers vous sous 24 h.");
+
+    setSending(true);
+    try {
+      await contactApi.send({ ...form, email: emailSchema.parse(form.email) });
+      setForm({ name: "", email: "", subject: "Question produit", message: "" });
+      toast("Merci ! Votre message a bien été enregistré. Nous vous répondrons dès que possible.");
+    } catch (err) {
+      if (err instanceof ApiError && err.fieldError("email"))
+        setErrors((current) => ({ ...current, email: err.fieldError("email") }));
+      else toast(errorMessage(err), "error");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -80,23 +95,40 @@ export default function Contact() {
       <Breadcrumbs items={[{ label: "Accueil", to: "/" }, { label: "Contact" }]} />
 
       <div className="mt-4 max-w-2xl">
-        <h1 className="font-display text-display-md text-primary">Contactez-nous</h1>
+        <h1 className="font-display text-display-md text-primary">Contactez CreaNew</h1>
         <p className="mt-3 text-body-lg text-on-surface-variant">
-          Une question sur un produit, une commande ou un projet d'aménagement ? Notre équipe vous répond en
-          moins de 24 heures.
+          Une question sur nos canapés d'angle, une commande ou un projet d'aménagement ? Notre
+          équipe est à votre disposition.
         </p>
       </div>
 
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Link
+          to="/messages"
+          className="inline-flex items-center gap-2 rounded-lg border border-secondary bg-secondary-container/30 px-4 py-2.5 text-label-md text-secondary transition-colors hover:bg-secondary hover:text-on-secondary"
+        >
+          <MessageCircle size={16} /> Ouvrir la messagerie CreaNew
+        </Link>
+      </div>
+
       <div className="mt-10 grid gap-10 lg:grid-cols-3">
-        {/* Formulaire */}
         <Reveal className="lg:col-span-2">
-          <form onSubmit={submit} className="card space-y-5 p-6 md:p-8" noValidate>
+          <form
+            onSubmit={(event) => void submit(event)}
+            className="card space-y-5 p-6 md:p-8"
+            noValidate
+          >
             <div className="grid gap-5 sm:grid-cols-2">
               <Field label="Nom complet" required error={errors.name}>
-                <Input value={form.name} onChange={set("name")} placeholder="Camille Moreau" />
+                <Input value={form.name} onChange={set("name")} placeholder="Rindra Léon" />
               </Field>
               <Field label="Email" required error={errors.email}>
-                <Input type="email" value={form.email} onChange={set("email")} placeholder="camille@exemple.fr" />
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={set("email")}
+                  placeholder="rindra@exemple.mg"
+                />
               </Field>
             </div>
             <Field label="Sujet">
@@ -117,65 +149,44 @@ export default function Contact() {
                 rows={6}
               />
             </Field>
+            {/* Honeypot invisible anti-spam */}
+            <input type="text" name="website" autoComplete="off" tabIndex={-1} className="hidden" />
             <div className="flex justify-end">
-              <Button type="submit" variant="accent" size="lg">
-                <Send size={17} /> Envoyer le message
+              <Button type="submit" variant="accent" size="lg" disabled={sending}>
+                {sending ? <Loader2 size={17} className="animate-spin" /> : <Send size={17} />}
+                {sending ? "Envoi…" : "Envoyer le message"}
               </Button>
             </div>
+            <p className="text-center text-label-sm text-on-surface-variant">
+              Vos données ne servent qu'à traiter votre demande. Vous recevrez un e-mail de
+              confirmation.
+            </p>
           </form>
         </Reveal>
 
-        {/* Infos */}
         <div className="space-y-4">
-          {contactInfo.map(({ icon: Icon, title, lines }, i) => (
-            <Reveal key={title} delay={i * 0.08}>
-              <div className="card flex items-start gap-4 p-5">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-secondary-container text-on-secondary-container">
-                  <Icon size={20} />
-                </span>
-                <div>
-                  <h3 className="text-label-lg text-primary">{title}</h3>
-                  {lines.map((line) => (
-                    <p key={line} className="text-body-sm text-on-surface-variant">
-                      {line}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-
-      {/* FAQ */}
-      <div className="mx-auto mt-16 max-w-3xl">
-        <h2 className="mb-6 text-center font-display text-headline-lg text-primary">Questions fréquentes</h2>
-        <div className="space-y-3">
-          {faqs.map((faq, i) => {
-            const open = openFaq === i;
-            return (
-              <div key={faq.q} className="card overflow-hidden">
-                <button
-                  onClick={() => setOpenFaq(open ? -1 : i)}
-                  aria-expanded={open}
-                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
-                >
-                  <span className="font-medium text-primary">{faq.q}</span>
-                  <ChevronDown
-                    size={18}
-                    className={`shrink-0 text-secondary transition-transform duration-300 ${open ? "rotate-180" : ""}`}
-                  />
-                </button>
-                <div
-                  className={`grid transition-all duration-300 ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
-                >
-                  <div className="overflow-hidden">
-                    <p className="px-5 pb-5 text-body-md text-on-surface-variant">{faq.a}</p>
+          {contactInfo.every(({ lines }) => lines.length === 0) && (
+            <p>Coordonnées non renseignées. Utilisez le formulaire pour nous écrire.</p>
+          )}
+          {contactInfo
+            .filter(({ lines }) => lines.length > 0)
+            .map(({ icon: Icon, title, lines }, i) => (
+              <Reveal key={title} delay={i * 0.08}>
+                <div className="card flex items-start gap-4 p-5">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-secondary-container text-on-secondary-container">
+                    <Icon size={20} />
+                  </span>
+                  <div>
+                    <h3 className="text-label-lg text-primary">{title}</h3>
+                    {lines.map((line) => (
+                      <p key={line} className="text-body-sm text-on-surface-variant">
+                        {line}
+                      </p>
+                    ))}
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              </Reveal>
+            ))}
         </div>
       </div>
     </div>

@@ -13,7 +13,9 @@ export default function Stars({ value = 0, size = 16, className = "" }: StarsPro
         <Star
           key={i}
           size={size}
-          className={i <= Math.round(value) ? "fill-secondary text-secondary" : "text-outline-variant"}
+          className={
+            i <= Math.round(value) ? "fill-secondary text-secondary" : "text-outline-variant"
+          }
         />
       ))}
     </div>

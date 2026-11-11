@@ -21,15 +21,13 @@ export const paymentsApi = {
   /** Opérateurs disponibles + format de référence attendu (§27). */
   providers: () => api.get<PaymentProviderInfo[]>("/payments/providers"),
 
-  
   submitForOrder: (orderId: string, input: SubmitPaymentInput, idempotencyKey?: string) =>
     api.post<Payment>("/payments/orders/" + orderId, input, { idempotencyKey }),
 
   forOrder: (orderId: string) => api.get<Payment>("/payments/orders/" + orderId),
 
   /** [Admin] Tous les paiements. */
-  list: (query: PaymentQuery = {}) =>
-    api.get<Paginated<Payment>>("/payments" + buildQuery(query)),
+  list: (query: PaymentQuery = {}) => api.get<Paginated<Payment>>("/payments" + buildQuery(query)),
 
   /** [Admin] Vérifier un paiement → commande `PAID`. */
   verify: (id: string) => api.post<Payment>("/payments/" + id + "/verify", {}),

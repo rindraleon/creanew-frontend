@@ -60,7 +60,10 @@ export default function Wishlist() {
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
             <li key={item.id} className="card flex flex-col overflow-hidden">
-              <Link to={"/boutique/" + item.slug} className="block aspect-[4/3] bg-surface-container">
+              <Link
+                to={"/boutique/" + item.slug}
+                className="block aspect-[4/3] bg-surface-container"
+              >
                 {item.imageUrl ? (
                   <img
                     src={item.imageUrl}

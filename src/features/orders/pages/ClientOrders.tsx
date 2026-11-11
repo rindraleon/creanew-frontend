@@ -70,7 +70,9 @@ export default function ClientOrders() {
                   {order.orderNumber}
                 </Link>
                 <OrderStatusBadge status={order.status} />
-                <span className="font-display text-lg text-primary">{formatPrice(order.total)}</span>
+                <span className="font-display text-lg text-primary">
+                  {formatPrice(order.total)}
+                </span>
               </div>
 
               <p className="mt-1 text-label-sm text-on-surface-variant">
@@ -80,10 +82,17 @@ export default function ClientOrders() {
 
               <ul className="mt-3 flex flex-wrap gap-2">
                 {order.items.slice(0, 4).map((item) => (
-                  <li key={item.id} className="flex items-center gap-2 rounded-lg bg-surface-container-low p-1.5 pr-3">
+                  <li
+                    key={item.id}
+                    className="flex items-center gap-2 rounded-lg bg-surface-container-low p-1.5 pr-3"
+                  >
                     <span className="h-9 w-9 shrink-0 overflow-hidden rounded bg-surface-container">
                       {item.imageUrl ? (
-                        <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          className="h-full w-full object-cover"
+                        />
                       ) : null}
                     </span>
                     <span className="max-w-[10rem] truncate text-label-sm text-on-surface-variant">

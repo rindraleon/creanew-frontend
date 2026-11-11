@@ -23,7 +23,7 @@ export default tseslint.config(
       "react-refresh": reactRefresh,
     },
     rules: {
-      // Un `async` sans `await` reste légitime pour satisfaire un contrat (bouchons de test).
+      // Un `async` sans `await` peut satisfaire un contrat asynchrone.
       "@typescript-eslint/require-await": "off",
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": "off",
@@ -34,18 +34,6 @@ export default tseslint.config(
       "@typescript-eslint/consistent-type-imports": ["warn", { prefer: "type-imports" }],
       "no-console": ["warn", { allow: ["warn", "error"] }],
       eqeqeq: ["error", "always"],
-    },
-  },
-  {
-    files: ["src/test/**/*.{ts,tsx}", "src/**/*.test.{ts,tsx}", "src/**/*.spec.{ts,tsx}"],
-    rules: {
-      // Les bouchons vi.fn(...) et les assertions sont typés `any` par nature.
-      "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/no-unsafe-member-access": "off",
-      "@typescript-eslint/no-unsafe-return": "off",
-      "@typescript-eslint/no-unsafe-argument": "off",
-      "@typescript-eslint/no-unsafe-call": "off",
-      "@typescript-eslint/no-floating-promises": "off",
     },
   },
 );

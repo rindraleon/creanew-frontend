@@ -1,11 +1,11 @@
-
-
 import type { ApiErrorBody, AuthResponse } from "../types/api";
 
 /** Timeout réseau par défaut (ms). */
 const DEFAULT_TIMEOUT = 20_000;
 
-const API_BASE_URL: string = (import.meta.env.VITE_API_URL as string | undefined) ?? "/api";
+export const API_BASE_URL: string = (
+  (import.meta.env.VITE_API_URL as string | undefined) ?? "/api"
+).replace(/\/$/, "");
 
 /* ------------------------------------------------------------------ */
 /* Erreur typée                                                        */
@@ -133,6 +133,11 @@ async function doRefresh(): Promise<string | null> {
       return null;
     }
 
+    if (response.status === 204) {
+      clearTokens();
+      notifySessionChange(null);
+      return null;
+    }
     const data = (await response.json()) as AuthResponse;
     setTokens(data);
     notifySessionChange(data.accessToken);
@@ -301,7 +306,8 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
 /* ------------------------------------------------------------------ */
 
 export const api = {
-  get: <T>(path: string, options?: RequestOptions) => apiFetch<T>(path, { ...options, method: "GET" }),
+  get: <T>(path: string, options?: RequestOptions) =>
+    apiFetch<T>(path, { ...options, method: "GET" }),
   post: <T>(path: string, json?: unknown, options?: RequestOptions) =>
     apiFetch<T>(path, { ...options, method: "POST", json }),
   patch: <T>(path: string, json?: unknown, options?: RequestOptions) =>
@@ -311,5 +317,3 @@ export const api = {
   delete: <T>(path: string, options?: RequestOptions) =>
     apiFetch<T>(path, { ...options, method: "DELETE" }),
 };
-
-export { API_BASE_URL };

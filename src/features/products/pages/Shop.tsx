@@ -35,7 +35,6 @@ export default function Shop() {
     setPage(1);
   };
 
-  
   const priceBounds = useMemo(() => {
     if (priceRanges.length === 0) return {};
     const selected = PRICE_RANGES.filter((r) => priceRanges.includes(r.id));

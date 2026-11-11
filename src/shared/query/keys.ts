@@ -1,4 +1,3 @@
-
 export const queryKeys = {
   /* --- Session --- */
   me: ["auth", "me"] as const,

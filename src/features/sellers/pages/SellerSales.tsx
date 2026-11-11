@@ -60,7 +60,12 @@ export default function SellerSales() {
       ) : (
         <>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard icon={TrendingUp} label="Chiffre d'affaires" value={formatPrice(total)} sub="sur la période" />
+            <StatCard
+              icon={TrendingUp}
+              label="Chiffre d'affaires"
+              value={formatPrice(total)}
+              sub="sur la période"
+            />
             <StatCard icon={BarChart3} label="Commandes" value={orders} sub="sur la période" />
             <StatCard
               icon={TrendingUp}

@@ -138,7 +138,11 @@ export default function BecomeSeller() {
             </p>
 
             <form onSubmit={(event) => void onSubmit(event)} className="mt-6 space-y-4" noValidate>
-              <Field label="Nom de la boutique" required error={form.formState.errors.shopName?.message}>
+              <Field
+                label="Nom de la boutique"
+                required
+                error={form.formState.errors.shopName?.message}
+              >
                 <Input placeholder="Atelier Rindra" {...form.register("shopName")} />
               </Field>
 
@@ -159,7 +163,10 @@ export default function BecomeSeller() {
                 </Field>
               </div>
 
-              <Field label="Adresse de l'atelier" error={form.formState.errors.addressLine?.message}>
+              <Field
+                label="Adresse de l'atelier"
+                error={form.formState.errors.addressLine?.message}
+              >
                 <Input {...form.register("addressLine")} />
               </Field>
 

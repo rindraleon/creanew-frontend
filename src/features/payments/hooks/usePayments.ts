@@ -27,15 +27,12 @@ export function useSubmitPayment() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: ({
-      orderId,
-      input,
-    }: {
-      orderId: string;
-      input: SubmitPaymentInput;
-    }) => paymentsApi.submitForOrder(orderId, input, crypto.randomUUID()),
+    mutationFn: ({ orderId, input }: { orderId: string; input: SubmitPaymentInput }) =>
+      paymentsApi.submitForOrder(orderId, input, crypto.randomUUID()),
     onSuccess: (payment) => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.payments.forOrder(payment.orderId) });
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.payments.forOrder(payment.orderId),
+      });
       void queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(payment.orderId) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.orders.all });
       toast("Référence envoyée. Un administrateur vérifie votre paiement.");
@@ -76,8 +73,7 @@ export function useRejectPayment() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
-      paymentsApi.reject(id, reason),
+    mutationFn: ({ id, reason }: { id: string; reason: string }) => paymentsApi.reject(id, reason),
     onSuccess: (payment) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.payments.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.orders.all });

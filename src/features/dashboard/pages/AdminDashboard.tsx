@@ -84,7 +84,11 @@ export default function AdminDashboard() {
           icon={TrendingUp}
           label="Chiffre d'affaires"
           value={formatPrice(dash.revenue)}
-          sub={growth !== null ? `${growth >= 0 ? "+" : ""}${growth.toFixed(1)} % vs période précédente` : "Pas de comparaison"}
+          sub={
+            growth !== null
+              ? `${growth >= 0 ? "+" : ""}${growth.toFixed(1)} % vs période précédente`
+              : "Pas de comparaison"
+          }
           trend={growth}
         />
         <StatCard

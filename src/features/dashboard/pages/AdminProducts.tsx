@@ -43,7 +43,10 @@ export default function AdminProducts() {
         className="mt-5 flex flex-wrap gap-3"
       >
         <span className="relative flex-1 min-w-[220px]">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+          />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -100,16 +103,25 @@ export default function AdminProducts() {
                   <th className="px-4 py-3 font-semibold">Statut</th>
                 </tr>
               </thead>
-              <tbody className={`divide-y divide-surface-container-high bg-surface-container-lowest ${isPlaceholderData ? "opacity-60" : ""}`}>
+              <tbody
+                className={`divide-y divide-surface-container-high bg-surface-container-lowest ${isPlaceholderData ? "opacity-60" : ""}`}
+              >
                 {products.map((product) => {
                   const image = productImageUrl(product);
                   return (
-                    <tr key={product.id} className="transition-colors hover:bg-surface-container-low">
+                    <tr
+                      key={product.id}
+                      className="transition-colors hover:bg-surface-container-low"
+                    >
                       <td className="px-4 py-3">
                         <span className="flex items-center gap-3">
                           <span className="h-11 w-11 shrink-0 overflow-hidden rounded-md bg-surface-container">
                             {image ? (
-                              <img src={image} alt={product.name} className="h-full w-full object-cover" />
+                              <img
+                                src={image}
+                                alt={product.name}
+                                className="h-full w-full object-cover"
+                              />
                             ) : null}
                           </span>
                           <span className="min-w-0">
