@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { authApi, type RegisterInput } from "../api/auth.api";
-import { clearTokens, onSessionChange, setTokens } from "../../../shared/api/client";
+import { clearTokens, onSessionChange, restoreSession, setTokens } from "../../../shared/api/client";
 import { queryKeys } from "../../../shared/query/keys";
 import type { AuthUser, SellerStatus, UserRole } from "../../../shared/types/api";
 
@@ -46,22 +46,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
 
-    authApi
-      .refresh()
-      .then((session) => {
+    const restore = async (): Promise<void> => {
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        const { session, reason } = await restoreSession();
         if (cancelled) return;
-        if (session) setTokens(session);
-        else clearTokens();
-        // Défensif : une session sans utilisateur équivaut à un visiteur.
-        setUserState(session?.user ?? null);
-      })
-      .catch(() => {
-        // Pas de session (visiteur) ou refresh expiré : état anonyme sûr.
-        if (!cancelled) clearTokens();
-      })
-      .finally(() => {
-        if (!cancelled) setIsBooting(false);
-      });
+        if (reason !== "offline") {
+          setUserState(session?.user ?? null);
+          return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 400 * (attempt + 1)));
+      }
+      if (!cancelled) clearTokens();
+    };
+
+    void restore().finally(() => {
+      if (!cancelled) setIsBooting(false);
+    });
 
     return () => {
       cancelled = true;

@@ -64,7 +64,7 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
           </button>
         </div>
 
-        <div className="thin-scroll max-h-[60vh] overflow-y-auto p-3">
+        <div className="p-3">
           {!searching ? (
             <p className="px-3 py-8 text-center text-body-sm text-on-surface-variant">
               Saisissez au moins 2 caractères pour lancer la recherche.

@@ -10,12 +10,14 @@ import {
   useDeleteCollection,
 } from "../hooks/useCollections";
 import { collectionsApi } from "../api/collections.api";
+import { useAdminProducts } from "../../dashboard/hooks/useAdmin";
 import PageLoader from "../../../components/ui/PageLoader";
 import Badge from "../../../components/ui/Badge";
 import Button from "../../../components/ui/Button";
 import Modal from "../../../components/ui/Modal";
 import ConfirmDialog from "../../../components/ui/ConfirmDialog";
 import { Field, Input, Textarea, Checkbox } from "../../../components/ui/Form";
+import { ImageUploadField } from "../../../components/ui/ImageUploadField";
 import PageHeader from "../../../components/common/PageHeader";
 import DataTable from "../../../components/common/DataTable";
 import { formatDate } from "../../../shared/utils/format";
@@ -27,6 +29,8 @@ const schema = z.object({
   tagline: z.string().trim().max(220).optional().or(z.literal("")),
   description: z.string().trim().max(2000).optional().or(z.literal("")),
   coverImageUrl: z.string().trim().max(500).optional().or(z.literal("")),
+  coverObjectKey: z.string().trim().max(500).optional().or(z.literal("")),
+  productIds: z.array(z.string()),
   isPublished: z.boolean(),
 });
 type FormValues = z.infer<typeof schema>;
@@ -36,11 +40,14 @@ const empty: FormValues = {
   tagline: "",
   description: "",
   coverImageUrl: "",
+  coverObjectKey: "",
+  productIds: [],
   isPublished: true,
 };
 
 export default function AdminCollections() {
   const { data: collections = [], isLoading } = useCollections(true);
+  const { data: productPage, isLoading: productsLoading } = useAdminProducts({ limit: 100 });
   const create = useCreateCollection();
   const update = useUpdateCollection();
   const remove = useDeleteCollection();
@@ -48,6 +55,15 @@ export default function AdminCollections() {
   const [editing, setEditing] = useState<Collection | null>(null);
   const [toDelete, setToDelete] = useState<Collection | null>(null);
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: empty });
+  const selectedProductIds = form.watch("productIds");
+  const products = productPage?.items ?? [];
+
+  const toggleProduct = (productId: string): void => {
+    const next = selectedProductIds.includes(productId)
+      ? selectedProductIds.filter((id) => id !== productId)
+      : [...selectedProductIds, productId];
+    form.setValue("productIds", next, { shouldDirty: true });
+  };
 
   const openCreate = () => {
     setEditing(null);
@@ -62,6 +78,8 @@ export default function AdminCollections() {
       tagline: c.tagline ?? "",
       description: c.description ?? "",
       coverImageUrl: c.coverImageUrl ?? "",
+      coverObjectKey: c.coverObjectKey ?? "",
+      productIds: c.productIds ?? [],
       isPublished: c.isPublished,
     });
     setOpen(true);
@@ -73,6 +91,8 @@ export default function AdminCollections() {
       tagline: v.tagline || undefined,
       description: v.description || undefined,
       coverImageUrl: v.coverImageUrl || undefined,
+      coverObjectKey: v.coverObjectKey || undefined,
+      productIds: v.productIds,
       isPublished: v.isPublished,
     };
     if (editing) update.mutate({ id: editing.id, input: payload });
@@ -196,12 +216,53 @@ export default function AdminCollections() {
               placeholder="Les pièces qui ont fait la réputation de CreaNew…"
             />
           </Field>
-          <Field label="URL image de couverture">
-            <Input
-              {...form.register("coverImageUrl")}
-              placeholder="/images/collection-signature.jpg"
-            />
+          <Field
+            label="Produits de la collection"
+            hint="Les pièces sélectionnées apparaissent sur la page publique de la collection."
+          >
+            <div className="thin-scroll max-h-56 divide-y divide-surface-container-high overflow-y-auto rounded-md border border-outline-variant">
+              {productsLoading ? (
+                <p className="px-3 py-4 text-body-sm text-on-surface-variant">Chargement…</p>
+              ) : products.length === 0 ? (
+                <p className="px-3 py-4 text-body-sm text-on-surface-variant">
+                  Aucun produit disponible.
+                </p>
+              ) : (
+                products.map((product) => (
+                  <label
+                    key={product.id}
+                    className="flex cursor-pointer items-center gap-3 px-3 py-2 hover:bg-surface-container-low"
+                  >
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-outline-variant text-secondary accent-secondary"
+                      checked={selectedProductIds.includes(product.id)}
+                      onChange={() => toggleProduct(product.id)}
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-body-sm font-medium text-primary">
+                        {product.name}
+                      </span>
+                      <span className="block truncate text-label-sm text-on-surface-variant">
+                        {product.seller?.shopName ?? "—"} · {product.status}
+                      </span>
+                    </span>
+                  </label>
+                ))
+              )}
+            </div>
           </Field>
+
+          <ImageUploadField
+            bucket="products"
+            label="Image de couverture"
+            hint="Importez une image depuis votre ordinateur (JPG, PNG ou WebP)."
+            value={form.watch("coverImageUrl") || form.watch("coverObjectKey") || null}
+            onChange={(url, objectKey) => {
+              form.setValue("coverImageUrl", url ?? "", { shouldDirty: true });
+              form.setValue("coverObjectKey", objectKey ?? "", { shouldDirty: true });
+            }}
+          />
           <Field label="Publiée">
             <Checkbox {...form.register("isPublished")} label="Visible sur le site public" />
           </Field>

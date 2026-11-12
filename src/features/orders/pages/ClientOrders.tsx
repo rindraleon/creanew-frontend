@@ -11,6 +11,7 @@ import Pagination from "../../../components/ui/Pagination";
 import OrderStatusBadge from "../../../components/ui/OrderStatusBadge";
 import { Select } from "../../../components/ui/Form";
 import type { OrderStatus } from "../../../shared/types/api";
+import { IMAGE_PLACEHOLDER, mediaUrl } from "../../../shared/utils/media";
 
 export default function ClientOrders() {
   const [page, setPage] = useState<number>(1);
@@ -89,7 +90,7 @@ export default function ClientOrders() {
                     <span className="h-9 w-9 shrink-0 overflow-hidden rounded bg-surface-container">
                       {item.imageUrl ? (
                         <img
-                          src={item.imageUrl}
+                          src={mediaUrl(item.imageUrl) ?? IMAGE_PLACEHOLDER}
                           alt={item.name}
                           className="h-full w-full object-cover"
                         />

@@ -64,7 +64,7 @@ export const queryKeys = {
     sellers: ["admin", "sellers"] as const,
     pendingSellers: ["admin", "sellers", "pending"] as const,
     products: (params: unknown) => ["admin", "products", params] as const,
-    categories: ["admin", "categories"] as const,
+    categories: (params: unknown = {}) => ["admin", "categories", params] as const,
     orders: (params: unknown) => ["admin", "orders", params] as const,
     payments: (params: unknown) => ["admin", "payments", params] as const,
     auditLogs: (params: unknown) => ["admin", "audit-logs", params] as const,

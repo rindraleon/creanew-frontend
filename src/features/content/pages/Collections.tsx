@@ -7,6 +7,7 @@ import Reveal from "../../../components/ui/Reveal";
 import Badge from "../../../components/ui/Badge";
 import EmptyState from "../../../components/ui/EmptyState";
 import PageLoader from "../../../components/ui/PageLoader";
+import { IMAGE_PLACEHOLDER, mediaUrl } from "../../../shared/utils/media";
 
 export default function Collections() {
   const { data: collections = [], isLoading } = useCollections(false);
@@ -64,9 +65,11 @@ export default function Collections() {
           className="group grid overflow-hidden rounded-xl bg-primary shadow-card-hover md:grid-cols-2"
         >
           <div className="overflow-hidden bg-surface-container">
-            {first.coverImageUrl ? (
+            {first.coverImageUrl || first.coverObjectKey ? (
               <img
-                src={first.coverImageUrl}
+                src={
+                  mediaUrl(first.coverImageUrl ?? first.coverObjectKey) ?? IMAGE_PLACEHOLDER
+                }
                 alt={first.name}
                 className="h-full max-h-[420px] w-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
@@ -108,9 +111,9 @@ export default function Collections() {
               className="group flex h-full flex-col overflow-hidden rounded-lg border border-outline-variant/40 bg-surface-container-lowest shadow-card transition-shadow hover:shadow-card-hover"
             >
               <div className="aspect-[16/10] overflow-hidden bg-surface-container">
-                {col.coverImageUrl ? (
+                {col.coverImageUrl || col.coverObjectKey ? (
                   <img
-                    src={col.coverImageUrl}
+                    src={mediaUrl(col.coverImageUrl ?? col.coverObjectKey) ?? IMAGE_PLACEHOLDER}
                     alt={col.name}
                     loading="lazy"
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"

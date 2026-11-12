@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Package, Search } from "lucide-react";
+import { Package, Plus, Search } from "lucide-react";
 import { useAdminProducts } from "../hooks/useAdmin";
+import AdminProductCreateModal from "./AdminProductCreateModal";
 import { PRODUCT_STATUS } from "../../../shared/utils/constants";
 import { formatPrice } from "../../../shared/utils/format";
 import { productImageUrl } from "../../../shared/utils/product";
 import PageLoader from "../../../components/ui/PageLoader";
+import Button from "../../../components/ui/Button";
 import EmptyState from "../../../components/ui/EmptyState";
 import Pagination from "../../../components/ui/Pagination";
 import StatusBadge from "../../../components/ui/StatusBadge";
@@ -17,6 +19,7 @@ export default function AdminProducts() {
   const [status, setStatus] = useState<ProductStatus | "">("");
   const [search, setSearch] = useState<string>("");
   const [term, setTerm] = useState<string>("");
+  const [createOpen, setCreateOpen] = useState<boolean>(false);
 
   const { data, isLoading, isError, refetch, isPlaceholderData } = useAdminProducts({
     page,
@@ -29,10 +32,19 @@ export default function AdminProducts() {
 
   return (
     <div>
-      <h2 className="font-display text-headline-md text-primary">Produits</h2>
-      <p className="mt-1 text-body-md text-on-surface-variant">
-        Catalogue multi-vendeurs. Un produit publié par un vendeur non approuvé est impossible.
-      </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="font-display text-headline-md text-primary">Produits</h2>
+          <p className="mt-1 text-body-md text-on-surface-variant">
+            Catalogue multi-vendeurs. Un produit publié par un vendeur non approuvé est impossible.
+          </p>
+        </div>
+        <Button onClick={() => setCreateOpen(true)}>
+          <Plus size={16} /> Nouveau produit
+        </Button>
+      </div>
+
+      {createOpen && <AdminProductCreateModal onClose={() => setCreateOpen(false)} />}
 
       <form
         onSubmit={(e) => {

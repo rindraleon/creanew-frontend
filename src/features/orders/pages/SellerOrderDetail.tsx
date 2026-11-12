@@ -14,6 +14,7 @@ import OrderStatusBadge from "../../../components/ui/OrderStatusBadge";
 import StatusBadge from "../../../components/ui/StatusBadge";
 import { Field, Select } from "../../../components/ui/Form";
 import type { OrderStatus } from "../../../shared/types/api";
+import { IMAGE_PLACEHOLDER, mediaUrl } from "../../../shared/utils/media";
 
 /** Transitions autorisées pour un vendeur (§66). */
 const NEXT_STATUSES: Partial<Record<OrderStatus, OrderStatus[]>> = {
@@ -81,7 +82,7 @@ export default function SellerOrderDetail() {
                   <span className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-surface-container">
                     {item.imageUrl ? (
                       <img
-                        src={item.imageUrl}
+                        src={mediaUrl(item.imageUrl) ?? IMAGE_PLACEHOLDER}
                         alt={item.name}
                         className="h-full w-full object-cover"
                       />

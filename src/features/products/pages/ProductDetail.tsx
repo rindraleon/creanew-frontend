@@ -19,6 +19,7 @@ import PageLoader from "../../../components/ui/PageLoader";
 import EmptyState from "../../../components/ui/EmptyState";
 import ProductCard from "../components/ProductCard";
 import { useProducts } from "../hooks/useCatalog";
+import { IMAGE_PLACEHOLDER, mediaUrl } from "../../../shared/utils/media";
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -57,7 +58,10 @@ export default function ProductDetail() {
   }
 
   const images = product.images ?? [];
-  const currentImage = images[activeImage]?.url ?? productImageUrl(product);
+  const active = images[activeImage];
+  const currentImage = active
+    ? mediaUrl(active.url ?? active.objectKey) ?? productImageUrl(product)
+    : productImageUrl(product);
   const promo = discountRate(product.price, product.compareAtPrice);
   const purchasable = isPurchasable(product);
   const lowStock = isLowStock(product.stock);
@@ -113,9 +117,9 @@ export default function ProductDetail() {
                       : "border-transparent hover:border-outline-variant"
                   }`}
                 >
-                  {image.url ? (
+                  {image.url || image.objectKey ? (
                     <img
-                      src={image.url}
+                      src={mediaUrl(image.url ?? image.objectKey) ?? IMAGE_PLACEHOLDER}
                       alt={image.alt ?? product.name}
                       className="h-full w-full object-cover"
                     />

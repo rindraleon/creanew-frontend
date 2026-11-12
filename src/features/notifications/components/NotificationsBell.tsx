@@ -66,7 +66,7 @@ export default function NotificationsBell() {
             )}
           </div>
 
-          <div className="max-h-80 overflow-y-auto thin-scroll p-2">
+          <div className="p-2">
             {isLoading ? (
               <div className="py-8">
                 <PageLoader label="Chargement…" />

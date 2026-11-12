@@ -1,4 +1,4 @@
-import { api } from "../../../shared/api/client";
+import { api, buildQuery } from "../../../shared/api/client";
 import type { Category } from "../../../shared/types/api";
 
 export interface CreateCategoryInput {
@@ -6,17 +6,27 @@ export interface CreateCategoryInput {
   slug?: string;
   description?: string;
   imageObjectKey?: string;
-  imageUrl?: string;
   position?: number;
+  isActive?: boolean;
+  parentId?: string | null;
+}
+
+export interface AdminCategoryQuery {
+  search?: string;
   isActive?: boolean;
 }
 
 export const categoriesApi = {
-  /** Publiques : aucune authentification requise. */
-  /** `GET /categories` renvoie un tableau (vérifié sur l'API). */
-  list: () => api.get<Category[]>("/categories?limit=100"),
+  list: (search?: string) =>
+    api.get<Category[]>("/categories" + (search ? "?search=" + encodeURIComponent(search) : "")),
+
+  adminList: (query: AdminCategoryQuery = {}) =>
+    api.get<Category[]>("/categories/admin/all" + buildQuery(query)),
 
   bySlug: (slug: string) => api.get<Category>("/categories/" + slug),
+
+  all: (query: AdminCategoryQuery = {}) =>
+    api.get<Category[]>("/categories/admin/all" + buildQuery(query)),
 
   create: (input: CreateCategoryInput) => api.post<Category>("/categories", input),
 

@@ -54,7 +54,7 @@ export default function AdminLayout() {
       title="Administration"
       brandInitial="C"
       brandName="CreaNew"
-      brandTagline="Canapés d'Angle"
+      brandTagline="Administration"
       items={items}
       menuItems={menuItems}
       notificationsTo="/espace-client/notifications"

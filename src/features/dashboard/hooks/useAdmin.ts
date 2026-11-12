@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminApi, type AdminAnalyticsType, type AdminUsersQuery } from "../api/admin.api";
 import { categoriesApi, type CreateCategoryInput } from "../../categories/api/categories.api";
+import { productsApi } from "../../products/api/products.api";
 import { queryKeys } from "../../../shared/query/keys";
 import { useAuth } from "../../auth/context/AuthProvider";
 import { useToast } from "../../../shared/context/ToastContext";
@@ -8,6 +9,7 @@ import { errorMessage } from "../../../shared/utils/errors";
 import type {
   AnalyticsRange,
   AuditLogQuery,
+  CreateProductInput,
   OrderQuery,
   OrderStatus,
   ProductQuery,
@@ -175,12 +177,29 @@ export function useAdminProducts(query: ProductQuery = {}) {
   });
 }
 
-export function useAdminCategories() {
+export function useAdminCreateProduct() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: (input: CreateProductInput) => productsApi.create(input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.admin.products({}) });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.seller.all });
+      toast("Produit créé.");
+    },
+    onError: (error: unknown) => toast(errorMessage(error), "error"),
+  });
+}
+
+export function useAdminCategories(query: { search?: string; isActive?: boolean } = {}) {
   const { isAdmin, isBooting } = useAuth();
   return useQuery({
-    queryKey: queryKeys.admin.categories,
-    queryFn: () => adminApi.categories(),
+    queryKey: queryKeys.admin.categories(query),
+    queryFn: () => adminApi.categories(query),
     enabled: isAdmin && !isBooting,
+    placeholderData: (previous) => previous,
   });
 }
 
@@ -191,7 +210,7 @@ export function useCreateCategory() {
   return useMutation({
     mutationFn: (input: CreateCategoryInput) => categoriesApi.create(input),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.admin.categories });
+      void queryClient.invalidateQueries({ queryKey: ["admin", "categories"] });
       void queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
       toast("Catégorie créée.");
     },
@@ -207,7 +226,7 @@ export function useUpdateCategory() {
     mutationFn: ({ id, input }: { id: string; input: Partial<CreateCategoryInput> }) =>
       categoriesApi.update(id, input),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.admin.categories });
+      void queryClient.invalidateQueries({ queryKey: ["admin", "categories"] });
       void queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
       toast("Catégorie mise à jour.");
     },
@@ -222,7 +241,7 @@ export function useDeleteCategory() {
   return useMutation({
     mutationFn: (id: string) => categoriesApi.remove(id),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.admin.categories });
+      void queryClient.invalidateQueries({ queryKey: ["admin", "categories"] });
       void queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
       toast("Catégorie supprimée.", "info");
     },

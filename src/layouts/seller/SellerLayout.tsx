@@ -34,7 +34,7 @@ export default function SellerLayout() {
     <DashboardShell
       title="Espace vendeur"
       brandInitial="V"
-      brandName="Mobilier"
+      brandName="Espace vendeur"
       brandTagline={user?.email}
       items={navItems}
       menuItems={menuItems}

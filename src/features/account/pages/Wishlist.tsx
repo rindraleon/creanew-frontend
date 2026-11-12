@@ -7,6 +7,7 @@ import Breadcrumbs from "../../../components/ui/Breadcrumbs";
 import EmptyState from "../../../components/ui/EmptyState";
 import PageLoader from "../../../components/ui/PageLoader";
 import Button from "../../../components/ui/Button";
+import { IMAGE_PLACEHOLDER, mediaUrl } from "../../../shared/utils/media";
 
 export default function Wishlist() {
   const { isAuthenticated, isBooting } = useAuth();
@@ -66,7 +67,7 @@ export default function Wishlist() {
               >
                 {item.imageUrl ? (
                   <img
-                    src={item.imageUrl}
+                    src={mediaUrl(item.imageUrl) ?? IMAGE_PLACEHOLDER}
                     alt={item.name}
                     loading="lazy"
                     className="h-full w-full object-cover"

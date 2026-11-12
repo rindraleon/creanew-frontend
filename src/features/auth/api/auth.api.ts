@@ -1,4 +1,4 @@
-import { api, API_BASE_URL } from "../../../shared/api/client";
+import { api, API_BASE_URL, restoreSession } from "../../../shared/api/client";
 import type { AuthResponse, AuthUser, UserProfile } from "../../../shared/types/api";
 
 export interface RegisterInput {
@@ -28,11 +28,10 @@ export const authApi = {
       `${API_BASE_URL}/auth/oauth/${provider}${params.size ? `?${params}` : ""}`,
     );
   },
-  refresh: (refreshToken?: string | null) =>
-    api.post<AuthResponse | null>("/auth/refresh", refreshToken ? { refreshToken } : {}, {
-      auth: false,
-      skipRefresh: true,
-    }),
+  refresh: async (): Promise<AuthResponse | null> => {
+    const { session } = await restoreSession();
+    return session;
+  },
   logout: (refreshToken?: string | null) =>
     api.post<{ message: string }>("/auth/logout", refreshToken ? { refreshToken } : {}),
   me: () => api.get<AuthUser>("/auth/me"),

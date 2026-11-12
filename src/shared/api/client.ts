@@ -1,11 +1,11 @@
 import type { ApiErrorBody, AuthResponse } from "../types/api";
+import { API_BASE_URL } from "./base-url";
+import { requestRefresh } from "./refresh";
+
+export { API_BASE_URL } from "./base-url";
 
 /** Timeout réseau par défaut (ms). */
 const DEFAULT_TIMEOUT = 20_000;
-
-export const API_BASE_URL: string = (
-  (import.meta.env.VITE_API_URL as string | undefined) ?? "/api"
-).replace(/\/$/, "");
 
 /* ------------------------------------------------------------------ */
 /* Erreur typée                                                        */
@@ -111,51 +111,34 @@ function notifySessionChange(token: string | null): void {
   refreshListeners.forEach((listener) => listener(token));
 }
 
-/** Promesse de refresh en cours : garantit l'unicité de l'appel (single-flight). */
-let refreshInFlight: Promise<string | null> | null = null;
+/**
+ * Restauration de session : un seul appel réseau à la fois, quel que soit le
+ * nombre d'appelants (montage de l'application, onglets, rejeu après 401).
+ */
+export async function restoreSession(): Promise<{
+  session: AuthResponse | null;
+  reason: "ok" | "expired" | "offline";
+}> {
+  const outcome = await requestRefresh(refreshToken);
 
-async function doRefresh(): Promise<string | null> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-      method: "POST",
-      credentials: "include", // le cookie httpOnly est la source de vérité
-      headers: {
-        "Content-Type": "application/json",
-        // Repli si le navigateur bloque le cookie : token gardé en mémoire.
-        ...(refreshToken ? {} : {}),
-      },
-      body: JSON.stringify(refreshToken ? { refreshToken } : {}),
-    });
+  if (outcome.status === "ok") {
+    setTokens(outcome.session);
+    notifySessionChange(outcome.session.accessToken);
+    return { session: outcome.session, reason: "ok" };
+  }
 
-    if (!response.ok) {
-      clearTokens();
-      notifySessionChange(null);
-      return null;
-    }
-
-    if (response.status === 204) {
-      clearTokens();
-      notifySessionChange(null);
-      return null;
-    }
-    const data = (await response.json()) as AuthResponse;
-    setTokens(data);
-    notifySessionChange(data.accessToken);
-    return data.accessToken;
-  } catch {
+  if (outcome.status === "expired") {
     clearTokens();
     notifySessionChange(null);
-    return null;
+    return { session: null, reason: "expired" };
   }
+
+  return { session: null, reason: "offline" };
 }
 
-export function refreshSession(): Promise<string | null> {
-  if (!refreshInFlight) {
-    refreshInFlight = doRefresh().finally(() => {
-      refreshInFlight = null;
-    });
-  }
-  return refreshInFlight;
+export async function refreshSession(): Promise<string | null> {
+  const { session } = await restoreSession();
+  return session?.accessToken ?? null;
 }
 
 /* ------------------------------------------------------------------ */

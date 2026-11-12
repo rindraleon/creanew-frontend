@@ -156,6 +156,10 @@ export interface Category {
   imageUrl: string | null;
   position: number;
   isActive: boolean;
+  parentId?: string | null;
+  parentName?: string | null;
+  productCount?: number;
+  childCount?: number;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
@@ -217,6 +221,7 @@ export interface ProductQuery {
   limit?: number;
   search?: string;
   category?: string;
+  collection?: string;
   seller?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -242,6 +247,8 @@ export interface CreateProductInput {
   compareAtPrice?: number;
   stock: number;
   categoryId: string;
+  /** Réservé aux administrateurs : vendeur propriétaire du produit. */
+  sellerId?: string;
   sku?: string;
   lowStockThreshold?: number;
   material?: string;

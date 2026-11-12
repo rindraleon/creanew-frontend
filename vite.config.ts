@@ -37,6 +37,11 @@ export default defineConfig(({ mode }) => {
           target: process.env.VITE_PROXY_TARGET ?? env.VITE_PROXY_TARGET ?? "http://localhost:3000",
           changeOrigin: true,
         },
+        // Les fichiers uploadés (stockage local) sont servis par l'API sur /uploads.
+        "/uploads": {
+          target: process.env.VITE_PROXY_TARGET ?? env.VITE_PROXY_TARGET ?? "http://localhost:3000",
+          changeOrigin: true,
+        },
       },
     },
   };

@@ -19,9 +19,18 @@ interface ModalProps {
   children: ReactNode;
   footer?: ReactNode;
   size?: ModalSize;
+  centered?: boolean;
 }
 
-export default function Modal({ open, onClose, title, children, footer, size = "md" }: ModalProps) {
+export default function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  footer,
+  size = "md",
+  centered = false,
+}: ModalProps) {
   const panelRef = useFocusTrap(open, onClose);
 
   useEffect(() => {
@@ -36,7 +45,9 @@ export default function Modal({ open, onClose, title, children, footer, size = "
 
   return (
     <div
-      className="fixed inset-0 z-[90] flex items-end justify-center sm:items-center sm:p-6"
+      className={`fixed inset-0 z-[90] flex justify-center ${
+        centered ? "items-center justify-center p-4" : "items-end sm:items-center sm:p-6"
+      }`}
       role="dialog"
       aria-modal="true"
       aria-label={typeof title === "string" ? title : "Dialogue"}
@@ -48,7 +59,9 @@ export default function Modal({ open, onClose, title, children, footer, size = "
       <div
         ref={panelRef}
         tabIndex={-1}
-        className={`relative flex max-h-[92vh] w-full flex-col rounded-t-lg bg-white shadow-card-hover animate-scale-in outline-none sm:rounded-lg ${sizes[size]}`}
+        className={`relative flex max-h-[92vh] w-full flex-col bg-white shadow-card-hover animate-scale-in outline-none ${
+          centered ? "rounded-lg" : "rounded-t-lg sm:rounded-lg"
+        } ${sizes[size]}`}
       >
         <div className="flex items-center justify-between border-b border-surface-container-highest px-5 py-4 sm:px-6">
           <h3 className="font-display text-headline-sm text-primary">{title}</h3>

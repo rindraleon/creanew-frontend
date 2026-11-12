@@ -17,6 +17,7 @@ import { Field, Input, Select, Textarea } from "../../../components/ui/Form";
 import PageLoader from "../../../components/ui/PageLoader";
 import EmptyState from "../../../components/ui/EmptyState";
 import type { ProductImageInput } from "../../../shared/types/api";
+import { IMAGE_PLACEHOLDER, mediaUrl } from "../../../shared/utils/media";
 
 const emptyValues: ProductFormInput = {
   name: "",
@@ -280,7 +281,7 @@ export default function SellerProductForm() {
                   <span className="block aspect-square overflow-hidden rounded-md bg-surface-container">
                     {image.url ? (
                       <img
-                        src={image.url}
+                        src={mediaUrl(image.url) ?? IMAGE_PLACEHOLDER}
                         alt={image.alt ?? ""}
                         className="h-full w-full object-cover"
                       />

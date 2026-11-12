@@ -24,6 +24,7 @@ export default function ConfirmDialog({
       onClose={onClose}
       title={title}
       size="sm"
+      centered
       footer={
         <>
           <Button variant="outline" onClick={onClose}>

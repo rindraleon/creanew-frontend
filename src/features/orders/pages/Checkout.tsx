@@ -348,7 +348,7 @@ export default function Checkout() {
           <div className="card p-5">
             <h2 className="font-display text-headline-sm text-primary">Votre commande</h2>
 
-            <ul className="mt-4 max-h-72 space-y-3 overflow-y-auto thin-scroll">
+            <ul className="mt-4 space-y-3">
               {items.map((item) => {
                 const image = productImageUrl(item.product);
                 return (

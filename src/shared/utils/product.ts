@@ -1,7 +1,13 @@
 import type { CartItem, Product } from "../types/api";
+import { mediaUrl } from "./media";
 
 export function productImageUrl(product: {
-  images?: { url?: string | null; isPrimary?: boolean; sortOrder?: number }[];
+  images?: {
+    url?: string | null;
+    objectKey?: string | null;
+    isPrimary?: boolean;
+    sortOrder?: number;
+  }[];
   imageUrl?: string | null;
 }): string | null {
   if (product.images && product.images.length > 0) {
@@ -10,10 +16,11 @@ export function productImageUrl(product: {
         Number(b.isPrimary ?? false) - Number(a.isPrimary ?? false) ||
         (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
     );
-    const primary = sorted.find((img) => img.url);
-    if (primary?.url) return primary.url;
+    // `url` peut être null sur d'anciennes lignes : la clé objet suffit.
+    const primary = sorted.find((img) => img.url || img.objectKey);
+    if (primary) return mediaUrl(primary.url ?? primary.objectKey);
   }
-  return product.imageUrl ?? null;
+  return mediaUrl(product.imageUrl);
 }
 
 /** Le produit peut être ajouté au panier. */

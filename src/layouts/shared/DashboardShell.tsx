@@ -35,7 +35,7 @@ const SIDEBAR = {
     panel: "bg-primary text-on-primary",
     muted: "text-primary-fixed-dim",
     hover: "hover:bg-primary-container hover:text-white",
-    active: "bg-secondary text-on-secondary",
+    active: "bg-secondary/15 text-secondary-fixed-dim shadow-[inset_2px_0_0_0_#B78834]",
     divider: "border-on-primary/10",
     chip: "bg-secondary-fixed-dim text-primary",
   },
@@ -49,13 +49,7 @@ const SIDEBAR = {
   },
 } as const;
 
-function UserMenu({
-  items,
-  variant,
-}: {
-  items: { to: string; label: string; icon: LucideIcon }[];
-  variant: "dark" | "light";
-}) {
+function UserMenu({ items }: { items: { to: string; label: string; icon: LucideIcon }[] }) {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -78,8 +72,6 @@ function UserMenu({
 
   if (!user) return null;
 
-  const dark = variant === "dark";
-
   return (
     <div className="relative" ref={ref}>
       <button
@@ -87,24 +79,16 @@ function UserMenu({
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className={`flex items-center gap-2 rounded-lg py-1.5 pl-1.5 pr-2 transition-colors ${
-          dark ? "hover:bg-primary-container" : "hover:bg-surface-container"
-        }`}
+        className="flex items-center gap-2 rounded-lg py-1.5 pl-1.5 pr-2 transition-colors hover:bg-surface-container"
       >
         <Avatar name={user.fullName} size="sm" />
-        <span
-          className={`hidden max-w-[10rem] truncate text-body-sm font-medium sm:block ${
-            dark ? "text-white" : "text-on-surface"
-          }`}
-        >
+        <span className="hidden max-w-[10rem] truncate text-body-sm font-medium text-on-surface sm:block">
           {user.username ?? user.firstName ?? user.fullName}
         </span>
         <ChevronDown
           size={16}
           aria-hidden
-          className={`transition-transform ${open ? "rotate-180" : ""} ${
-            dark ? "text-primary-fixed-dim" : "text-on-surface-variant"
-          }`}
+          className={`text-on-surface-variant transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -222,11 +206,20 @@ export default function DashboardShell({
 
   const brand = (
     <Link to={items[0]?.to ?? "/"} className="mb-8 flex items-center gap-2.5">
-      <span
-        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-display text-lg font-bold ${theme.chip}`}
-      >
-        {brandInitial}
-      </span>
+      {brandInitial === "C" ? (
+        <img
+          src="/logo-creanew.jpg"
+          alt=""
+          className="h-9 w-9 shrink-0 rounded-lg object-cover"
+        />
+      ) : (
+        <span
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-display text-lg font-bold ${theme.chip}`}
+          aria-hidden="true"
+        >
+          {brandInitial}
+        </span>
+      )}
       <div className="min-w-0">
         <p
           className={`truncate font-display text-lg font-bold leading-tight ${
@@ -316,7 +309,7 @@ export default function DashboardShell({
             </Link>
           ) : null}
 
-          <UserMenu items={menuItems} variant={variant} />
+          <UserMenu items={menuItems} />
         </header>
 
         <main className="mx-auto max-w-6xl p-4 sm:p-6 lg:p-8">

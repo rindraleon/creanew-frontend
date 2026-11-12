@@ -13,6 +13,7 @@ import OrderStatusBadge from "../../../components/ui/OrderStatusBadge";
 import StatusBadge from "../../../components/ui/StatusBadge";
 import { Field, Select, Textarea } from "../../../components/ui/Form";
 import type { OrderStatus } from "../../../shared/types/api";
+import { IMAGE_PLACEHOLDER, mediaUrl } from "../../../shared/utils/media";
 
 export default function AdminOrderDetail() {
   const { id } = useParams<{ id: string }>();
@@ -76,7 +77,7 @@ export default function AdminOrderDetail() {
                   <span className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-surface-container">
                     {item.imageUrl ? (
                       <img
-                        src={item.imageUrl}
+                        src={mediaUrl(item.imageUrl) ?? IMAGE_PLACEHOLDER}
                         alt={item.name}
                         className="h-full w-full object-cover"
                       />

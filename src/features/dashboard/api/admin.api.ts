@@ -112,7 +112,8 @@ export const adminApi = {
   products: (query: ProductQuery = {}) =>
     api.get<Paginated<Product>>("/admin/products" + buildQuery(query)),
 
-  categories: () => api.get<Category[]>("/admin/categories"),
+  categories: (query: { search?: string; isActive?: boolean } = {}) =>
+    api.get<Category[]>("/admin/categories" + buildQuery(query)),
 
   /* --- Commandes & paiements --- */
   orders: (query: OrderQuery = {}) =>

@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { PackageSearch, SlidersHorizontal, X } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { ArrowRight, PackageSearch, SlidersHorizontal, X } from "lucide-react";
 import { useProducts } from "../hooks/useCatalog";
+import { useCollection } from "../../collections/hooks/useCollections";
 import { PRICE_RANGES, SORT_OPTIONS } from "../../../shared/utils/constants";
 import ProductCard from "../components/ProductCard";
 import FilterPanel from "../components/FilterPanel";
@@ -25,7 +26,9 @@ export default function Shop() {
 
   const q = searchParams.get("q") ?? "";
   const categorie = searchParams.get("categorie") ?? "toutes";
+  const collectionSlug = searchParams.get("collection") ?? "";
   const sort = (searchParams.get("tri") ?? "newest") as ProductSort;
+  const { data: collection } = useCollection(collectionSlug || undefined);
 
   const setParam = (key: string, value: string): void => {
     const next = new URLSearchParams(searchParams);
@@ -49,6 +52,7 @@ export default function Shop() {
     limit: PER_PAGE,
     search: q || undefined,
     category: categorie !== "toutes" ? categorie : undefined,
+    collection: collectionSlug || undefined,
     availability: inStockOnly || undefined,
     sort,
     ...priceBounds,
@@ -65,7 +69,11 @@ export default function Shop() {
   };
 
   const activeFilterCount =
-    (categorie !== "toutes" ? 1 : 0) + priceRanges.length + (inStockOnly ? 1 : 0) + (q ? 1 : 0);
+    (categorie !== "toutes" ? 1 : 0) +
+    (collectionSlug ? 1 : 0) +
+    priceRanges.length +
+    (inStockOnly ? 1 : 0) +
+    (q ? 1 : 0);
 
   const panel = (mobile = false) => (
     <FilterPanel
@@ -112,6 +120,24 @@ export default function Shop() {
           </button>
         )}
       </div>
+
+      {collectionSlug && (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-secondary/30 bg-secondary-container/40 px-4 py-3">
+          <p className="text-body-sm text-on-surface-variant">
+            Collection :{" "}
+            <strong className="text-primary">{collection?.name ?? collectionSlug}</strong>
+            {collection?.tagline && (
+              <span className="ml-2 text-secondary">{collection.tagline}</span>
+            )}
+          </p>
+          <Link
+            to="/collections"
+            className="inline-flex items-center gap-1.5 text-label-md font-semibold text-secondary hover:underline"
+          >
+            Toutes les collections <ArrowRight size={14} />
+          </Link>
+        </div>
+      )}
 
       <div className="mt-8 flex gap-8">
         <aside className="hidden w-64 shrink-0 lg:block">

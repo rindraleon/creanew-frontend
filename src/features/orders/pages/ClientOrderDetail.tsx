@@ -13,6 +13,7 @@ import OrderStatusBadge from "../../../components/ui/OrderStatusBadge";
 import StatusBadge from "../../../components/ui/StatusBadge";
 import { useToast } from "../../../shared/context/ToastContext";
 import { errorMessage } from "../../../shared/utils/errors";
+import { IMAGE_PLACEHOLDER, mediaUrl } from "../../../shared/utils/media";
 
 /** Statuts qui autorisent encore une annulation client (§66). */
 const CANCELLABLE = ["pending_payment", "payment_submitted", "paid"] as const;
@@ -100,7 +101,7 @@ export default function ClientOrderDetail() {
                   <span className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-surface-container">
                     {item.imageUrl ? (
                       <img
-                        src={item.imageUrl}
+                        src={mediaUrl(item.imageUrl) ?? IMAGE_PLACEHOLDER}
                         alt={item.name}
                         className="h-full w-full object-cover"
                       />

@@ -91,7 +91,7 @@ export default function MessagesPage() {
               {conversations.length} conversation(s)
             </p>
           </div>
-          <div className="max-h-[520px] overflow-y-auto">
+          <div>
             {conversations.length === 0 ? (
               <div className="p-8">
                 <EmptyState

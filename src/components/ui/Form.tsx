@@ -76,15 +76,19 @@ interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "typ
   label: ReactNode;
 }
 
-export function Checkbox({ label, ...props }: CheckboxProps) {
+export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Checkbox(
+  { label, className = "", ...props },
+  ref,
+) {
   return (
     <label className="flex cursor-pointer select-none items-start gap-2.5">
       <input
+        ref={ref}
         type="checkbox"
-        className="mt-1 h-4 w-4 rounded border-outline-variant text-secondary accent-secondary focus:ring-secondary/30"
+        className={`mt-1 h-4 w-4 rounded border-outline-variant text-secondary accent-secondary focus:ring-secondary/30 ${className}`}
         {...props}
       />
       <span className="text-body-sm text-on-surface-variant">{label}</span>
     </label>
   );
-}
+});

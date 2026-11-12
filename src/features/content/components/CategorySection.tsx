@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useCategories } from "../../products/hooks/useCatalog";
 import SectionHeading from "../../../components/ui/SectionHeading";
 import Reveal from "../../../components/ui/Reveal";
+import { IMAGE_PLACEHOLDER, mediaUrl } from "../../../shared/utils/media";
 
 /** Catégories récupérées depuis l'API (plus aucune liste en dur). */
 export default function CategorySection() {
@@ -29,7 +30,7 @@ export default function CategorySection() {
                 <span className="block aspect-[4/3] overflow-hidden bg-surface-container">
                   {category.imageUrl ? (
                     <img
-                      src={category.imageUrl}
+                      src={mediaUrl(category.imageUrl) ?? IMAGE_PLACEHOLDER}
                       alt={category.name}
                       loading="lazy"
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
