@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-label="Image indisponible">
+  <rect width="800" height="450" fill="#1E1E1E"/>
+  <g fill="none" stroke="#C8A251" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.9">
+    <rect x="330" y="150" width="140" height="105" rx="10"/>
+    <path d="M330 235 L410 165 L470 240"/>
+    <circle cx="437" cy="185" r="10" fill="#C8A251" stroke="none"/>
+  </g>
+  <text x="400" y="320" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#FFFBF5" letter-spacing="6">CREANEW</text>
+  <text x="400" y="356" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#B8B2A8" letter-spacing="2">IMAGE INDISPONIBLE</text>
+</svg>

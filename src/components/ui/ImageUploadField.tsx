@@ -1,9 +1,10 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { ImagePlus, Loader2, Trash2, Upload } from "lucide-react";
-import { filesApi, type UploadBucket } from "@/shared/api/files.api";
-import { mediaUrl } from "@/shared/utils/media";
-import { errorMessage } from "@/shared/utils/errors";
-import { cn } from "@/lib/utils";
+import { filesApi, type UploadBucket } from "@/services/files.api";
+import { mediaUrl } from "@/utils/media";
+import { errorMessage } from "@/utils/errors";
+import { cn } from "@/utils/utils";
+import SafeImage from "@/components/ui/SafeImage";
 
 export interface ImageUploadFieldProps {
   bucket: Extract<UploadBucket, "products" | "avatars">;
@@ -98,7 +99,7 @@ export function ImageUploadField({
           )}
         >
           {preview ? (
-            <img src={preview} alt="Aperçu" className="h-full w-full object-cover" />
+            <SafeImage src={preview} alt="Aperçu" className="h-full w-full object-cover" />
           ) : (
             <ImagePlus aria-hidden="true" className="h-7 w-7 text-on-surface-variant" />
           )}

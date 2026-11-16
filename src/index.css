@@ -1,4 +1,4 @@
-@import "./styles/fonts.css";
+@import "./assets/fonts.css";
 
 @tailwind base;
 @tailwind components;
@@ -56,6 +56,80 @@
   .input-field {
     @apply w-full rounded-lg border border-outline-variant bg-white px-3.5 py-2.5 text-body-md text-on-background outline-none transition placeholder:text-on-surface-variant/50 focus:border-secondary focus:ring-2 focus:ring-secondary/20 disabled:cursor-not-allowed disabled:opacity-60;
   }
+  /* Tableau de données -> cartes sous md (chaque cellule devient une ligne label/valeur) */
+  @media (max-width: 767px) {
+    .table-cards {
+      display: block !important;
+      width: 100% !important;
+      min-width: 0 !important;
+    }
+    .table-cards thead {
+      display: none;
+    }
+    .table-cards tbody,
+    .table-cards tr,
+    .table-cards td {
+      display: block;
+    }
+    .table-cards tbody {
+      width: 100%;
+    }
+    .table-cards tr {
+      padding: 0.75rem 1rem;
+    }
+    .table-cards td {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.3rem 0;
+    }
+    .table-cards td::before {
+      content: attr(data-label);
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #6B6560;
+    }
+    .table-cards td:not([data-label])::before {
+      content: none;
+    }
+    .table-cards td > * {
+      min-width: 0;
+    }
+    .table-cards td[data-main] {
+      flex-wrap: wrap;
+      column-gap: 0.75rem;
+      row-gap: 0.125rem;
+    }
+
+    .table-cards td[data-main] .truncate {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .table-cards td[data-main] {
+      justify-content: flex-start;
+      padding-bottom: 0.5rem;
+    }
+    .table-cards td[data-main]::before {
+      content: none;
+    }
+    .table-cards td[data-actions] {
+      justify-content: flex-end;
+      padding-top: 0.6rem;
+    }
+    .table-cards td[data-actions]::before {
+      content: none;
+    }
+    .table-cards td[data-actions] > span {
+      flex-wrap: wrap;
+    }
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }

@@ -1,5 +1,5 @@
-import { ORDER_STATUS } from "../../shared/utils/constants";
-import type { OrderStatus } from "../../shared/types/api";
+import { ORDER_STATUS } from "../../utils/constants";
+import type { OrderStatus } from "../../services/api";
 
 interface OrderStatusBadgeProps {
   status: OrderStatus;

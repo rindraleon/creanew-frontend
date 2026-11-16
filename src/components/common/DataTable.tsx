@@ -5,6 +5,9 @@ interface Column<T> {
   header: string;
   render: (row: T) => ReactNode;
   className?: string;
+  /** Rendu mobile (cartes) : "main" = en-tête sans libellé, "actions" = boutons à droite.
+   *  Par défaut : la première colonne est "main" et la colonne actions (`actions`, ou `text-right`) est "actions". */
+  mobile?: "main" | "actions" | "field";
 }
 
 interface DataTableProps<T> {
@@ -32,7 +35,7 @@ export default function DataTable<T>({
   }
   return (
     <div className="mt-6 overflow-x-auto rounded-lg border border-outline-variant/50">
-      <table className="w-full min-w-[720px] text-left text-body-sm">
+      <table className="table-cards w-full min-w-[720px] text-left text-body-sm">
         <thead className="bg-surface-container-low text-label-sm uppercase tracking-wider text-on-surface-variant">
           <tr>
             {columns.map((c) => (
@@ -48,11 +51,26 @@ export default function DataTable<T>({
               key={String(row[keyField])}
               className="transition-colors hover:bg-surface-container-low"
             >
-              {columns.map((c) => (
-                <td key={c.key} className="px-4 py-3">
-                  {c.render(row)}
-                </td>
-              ))}
+              {columns.map((c, index) => {
+                const isMain =
+                  c.mobile === "main" ||
+                  (c.mobile === undefined && index === 0);
+                const isActions =
+                  c.mobile === "actions" ||
+                  (c.mobile === undefined &&
+                    (c.key === "actions" || (c.className ?? "").includes("text-right")));
+                return (
+                  <td
+                    key={c.key}
+                    data-label={c.header || undefined}
+                    data-main={isMain || undefined}
+                    data-actions={isActions || undefined}
+                    className={`px-4 py-3 ${c.className ?? ""}`}
+                  >
+                    {c.render(row)}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>

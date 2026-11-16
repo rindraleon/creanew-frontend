@@ -1,0 +1,163 @@
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+
+import { authApi, type RegisterInput } from "../services/auth.api";
+import { clearTokens, onSessionChange, restoreSession, setTokens } from "../services/client";
+import { queryKeys } from "../services/keys";
+import type { AuthUser, SellerStatus, UserRole } from "../services/api";
+
+/* ------------------------------------------------------------------ */
+/* Contrat du contexte                                                 */
+/* ------------------------------------------------------------------ */
+
+export interface AuthContextValue {
+  /** Utilisateur connecté, `null` si anonyme ou session expirée. */
+  user: AuthUser | null;
+  /** `true` pendant la restauration de session au démarrage. */
+  isBooting: boolean;
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+  isSeller: boolean;
+  /** Vendeur **approuvé** : le seul cas autorisé à vendre (§10). */
+  isApprovedSeller: boolean;
+  sellerStatus: SellerStatus | null;
+  hasRole: (...roles: UserRole[]) => boolean;
+  login: (identifier: string, password: string) => Promise<AuthUser>;
+  register: (input: RegisterInput) => Promise<void>;
+  logout: () => Promise<void>;
+  /** Met à jour l'utilisateur en mémoire (après `PATCH /users/me`). */
+  setUser: (user: AuthUser) => void;
+
+  refreshSession: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+/* ------------------------------------------------------------------ */
+/* Fournisseur                                                         */
+/* ------------------------------------------------------------------ */
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUserState] = useState<AuthUser | null>(null);
+  const [isBooting, setIsBooting] = useState<boolean>(true);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const restore = async (): Promise<void> => {
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        const { session, reason } = await restoreSession();
+        if (cancelled) return;
+        if (reason !== "offline") {
+          setUserState(session?.user ?? null);
+          return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 400 * (attempt + 1)));
+      }
+      if (!cancelled) clearTokens();
+    };
+
+    void restore().finally(() => {
+      if (!cancelled) setIsBooting(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(
+    () =>
+      onSessionChange((token) => {
+        if (token) return;
+        setUserState(null);
+        queryClient.removeQueries({ queryKey: queryKeys.cart.all });
+        queryClient.removeQueries({ queryKey: queryKeys.orders.all });
+        queryClient.removeQueries({ queryKey: queryKeys.notifications.all });
+        queryClient.removeQueries({ queryKey: queryKeys.wishlist.all });
+      }),
+    [queryClient],
+  );
+
+  const setUser = useCallback((next: AuthUser) => setUserState(next), []);
+
+  const refreshSession = useCallback(async (): Promise<void> => {
+    try {
+      // 204 sans contenu quand la session a expiré : d'où le `?.` défensif.
+      const session = await authApi.refresh();
+      if (!session?.user) {
+        setUserState(null);
+        return;
+      }
+      setTokens(session);
+      setUserState(session.user);
+      queryClient.clear();
+    } catch {
+      setUserState(null);
+    }
+  }, [queryClient]);
+
+  const login = useCallback(
+    async (identifier: string, password: string): Promise<AuthUser> => {
+      const session = await authApi.login(identifier, password);
+      setTokens(session);
+      setUserState(session.user);
+      // Les données privées de l'utilisateur précédent ne doivent pas fuiter.
+      queryClient.clear();
+      return session.user;
+    },
+    [queryClient],
+  );
+
+  const register = useCallback(async (input: RegisterInput): Promise<void> => {
+    // L’inscription est suivie d’une connexion explicite avec les identifiants.
+    await authApi.register(input);
+  }, []);
+
+  const logout = useCallback(async (): Promise<void> => {
+    try {
+      await authApi.logout();
+    } catch {
+      // La déconnexion locale doit réussir même si l'API est injoignable.
+    }
+    clearTokens();
+    setUserState(null);
+    queryClient.clear();
+  }, [queryClient]);
+
+  const value = useMemo<AuthContextValue>(() => {
+    const role = user?.role ?? null;
+    const status = user?.sellerStatus ?? null;
+    return {
+      user,
+      isBooting,
+      isAuthenticated: user !== null,
+      isAdmin: role === "admin",
+      isSeller: role === "seller",
+      isApprovedSeller: role === "seller" && status === "approved",
+      sellerStatus: status,
+      hasRole: (...roles: UserRole[]) => (role ? roles.includes(role) : false),
+      login,
+      register,
+      logout,
+      setUser,
+      refreshSession,
+    };
+  }, [user, isBooting, login, register, logout, setUser, refreshSession]);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+/* ------------------------------------------------------------------ */
+/* Accès                                                               */
+/* ------------------------------------------------------------------ */
+
+export function useAuth(): AuthContextValue {
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    throw new Error("useAuth doit être utilisé dans un <AuthProvider>.");
+  }
+  return ctx;
+}

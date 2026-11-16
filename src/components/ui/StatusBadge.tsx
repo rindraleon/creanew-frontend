@@ -3,13 +3,13 @@ import {
   PAYMENT_STATUS,
   PRODUCT_STATUS,
   SELLER_STATUS,
-} from "../../shared/utils/constants";
+} from "../../utils/constants";
 import type {
   OrderStatus,
   PaymentStatus,
   ProductStatus,
   SellerStatus,
-} from "../../shared/types/api";
+} from "../../services/api";
 
 type AnyStatus = OrderStatus | PaymentStatus | ProductStatus | SellerStatus;
 

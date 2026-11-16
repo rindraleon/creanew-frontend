@@ -1,5 +1,5 @@
 import { ChartNoAxesColumn } from "lucide-react";
-import type { ChartDatum } from "../../shared/utils/format";
+import type { ChartDatum } from "../../utils/format";
 
 interface BarChartProps {
   data: ChartDatum[];

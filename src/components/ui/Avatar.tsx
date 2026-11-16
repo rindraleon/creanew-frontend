@@ -1,4 +1,4 @@
-import { initials } from "../../shared/utils/format";
+import { initials } from "../../utils/format";
 
 type AvatarSize = "sm" | "md" | "lg";
 

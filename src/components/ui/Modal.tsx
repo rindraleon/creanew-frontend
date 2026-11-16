@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { X } from "lucide-react";
-import { useFocusTrap } from "../../shared/hooks/useFocusTrap";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 export type ModalSize = "sm" | "md" | "lg" | "xl";
 
